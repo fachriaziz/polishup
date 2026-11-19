@@ -22,11 +22,21 @@ npm start
 
 Choose one or more harnesses and project or personal scope. `install` is an optional alias for the same setup. Project scope uses the nearest Git root, or the current directory without Git. Running from the PolishUp checkout selects that checkout, not another project.
 
-This runs the local installer without downloading PolishUp from npm. To target another project, run `node "<path-to-polishup>/cli/index.mjs"` from that project's directory instead. Registry installation is not available yet; use this local route or manual installation.
+This runs the local installer without downloading PolishUp from npm. To target another project, run `node "<path-to-polishup>/cli/index.mjs"` from that project's directory instead.
 
 The installer supports the nine harnesses below and custom destinations. It checks conflicts, preserves backups outside skill discovery, and displays the affected paths. Shared project locations are written once; failures in independent targets are reported separately.
 
 Use `--help` for optional flags. `--dry-run` previews changes; `--agent` and `--scope` support noninteractive use. Choose `--agent manual --destination <path> --scope project|user` for a custom folder ending in `polishup`. This copies files without registering discovery. `--replace` explicitly backs up and replaces conflicting content.
+
+### npm installer
+
+With Node.js 22 or newer, run from the destination project:
+
+```text
+npx polishup
+```
+
+The npm package provides the installer and optional helper tools. The skill, plugin and executable are named `polishup`. No npm account is needed to install a public package.
 
 ### Manual installation
 
@@ -101,7 +111,9 @@ git pull
 npm start
 ```
 
-To uninstall, run `npm start -- uninstall` from the checkout or extracted package. The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`. The separate `update` action checks the npm registry and requires a published package.
+For npm installations, run `npx polishup update` from the destination project. This checks the registry for a newer installer before applying managed changes. Use `npx polishup uninstall` to remove a registered installation.
+
+For a checkout or extracted package, use `npm start -- uninstall`. The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`.
 
 Keep the displayed backup paths and inspect interrupted-operation locks before removing them. Uninstalling one registered Codex, Antigravity, or Hermes project consumer retains shared files while another registered consumer remains. Other readers of compatible paths cannot be enumerated.
 

@@ -22,7 +22,7 @@ test('source plugin contains one portable skill and ready native resources', asy
   for (const file of ['plugin.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json', '.antigravity-plugin/plugin.json']) {
     assert.ok(fs.existsSync(path.join(root, file)), `Source manifest missing: ${file}`);
     const manifest = JSON.parse(fs.readFileSync(path.join(root, file)));
-    assert.equal(manifest.name, metadata.name);
+    assert.equal(manifest.name, 'polishup');
     assert.equal(manifest.version, metadata.version);
     if (manifest.skills) assert.ok(fs.statSync(path.resolve(root, manifest.skills)).isDirectory());
     for (const forbidden of ['hooks', 'mcpServers', 'apps', 'agents', 'rules']) assert.equal(Object.hasOwn(manifest, forbidden), false);
@@ -61,9 +61,10 @@ test('npm packs the complete installer directly from source without development 
   });
   assert.equal(result.status, 0, result.error?.message || result.stderr);
   const report = JSON.parse(result.stdout);
-  const packed = Array.isArray(report) ? report[0] : report.polishup;
+  const metadata = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const packed = Array.isArray(report) ? report[0] : report[metadata.name];
   assert.ok(packed && Array.isArray(packed.files), 'Unexpected npm pack report: ' + result.stdout.slice(0, 800));
-  assert.equal(packed.name, 'polishup');
+  assert.equal(packed.name, metadata.name);
   const { loadPayload } = await import('../cli/installations.mjs');
   const core = Object.keys(loadPayload(root).files).map(file => 'skills/polishup/' + file);
   const expected = [...core, 'README.md', 'LICENSE', 'package.json', '.opencode/commands/polishup.md',

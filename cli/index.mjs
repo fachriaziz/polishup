@@ -10,7 +10,7 @@ import { checkUpdate, forwardedTargetArgs, runNewVersion } from './update.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const metadata = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-const helpCommand = metadata.private ? 'node "<path-to-polishup>/cli/index.mjs"' : 'npx polishup';
+const helpCommand = metadata.private ? 'node "<path-to-polishup>/cli/index.mjs"' : `npx ${metadata.name}`;
 const HELP = `PolishUp ${metadata.version}
 
 Usage: ${helpCommand} [install|update|uninstall|color] [options]

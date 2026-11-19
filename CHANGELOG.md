@@ -19,6 +19,7 @@ Notable user-facing changes only. Unreleased work has no release date.
 
 ### Changed
 
+- Separate the npm distribution name from the stable `polishup` skill, plugin and executable names.
 - Expanded UI/UX defaults for generic replacement presets, redundant interface content, unnecessary dialogs and unfinished assets, with clearer typography and failed-animation checks while preserving existing design direction.
 - Strengthened Code guidance for version-matched APIs, supported modern patterns, dependency advisories, and asynchronous completion without unnecessary upgrades or compatibility scaffolding.
 - Strengthened Writing guidance against unsupported analytical add-ons, vague authority, invented terminology, and unearned agreement while preserving factual meaning and author voice.

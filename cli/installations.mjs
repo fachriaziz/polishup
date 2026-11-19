@@ -7,6 +7,7 @@ import { HOSTS, getManualTarget, getTarget, getStorageGroup } from './hosts.mjs'
 
 export const AGENTS = Object.fromEntries(Object.entries(HOSTS).map(([key, host]) => [key, host.label]));
 export { getManualTarget, getTarget };
+export const PACKAGE_NAME = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).name;
 const RECEIPT = '.polishup-install.json';
 const hash = value => createHash('sha256').update(value).digest('hex');
 const exists = file => fs.existsSync(file);
@@ -55,7 +56,7 @@ export function loadPayload(packageRoot) {
   const scripts = path.join(skillRoot, 'scripts');
   if (fs.existsSync(scripts)) Object.assign(files, filesIn(scripts, 'scripts/'));
   const hashes = Object.fromEntries(Object.keys(files).sort().map(file => [file, hash(files[file])]));
-  if (metadata.name !== 'polishup' || !/^\d+\.\d+\.\d+$/.test(metadata.version)) throw new Error('Invalid PolishUp package identity.');
+  if (metadata.name !== PACKAGE_NAME || !/^\d+\.\d+\.\d+$/.test(metadata.version)) throw new Error('Invalid PolishUp package identity.');
   return { version: metadata.version, files, hashes, revision: hash(JSON.stringify(hashes)), packageRoot, skillRoot };
 }
 

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { compareVersions } from './installations.mjs';
+import { compareVersions, PACKAGE_NAME } from './installations.mjs';
 
 const REGISTRY = 'https://registry.npmjs.org/';
 const stableVersion = version => typeof version === 'string' && /^\d+\.\d+\.\d+$/.test(version);
@@ -10,18 +10,18 @@ export async function checkUpdate(metadata, { fetchImpl = fetch, env = process.e
   if (metadata.private) return { kind: 'local' };
   if (env.POLISHUP_UPDATE_HANDOFF === metadata.version) return { kind: 'current' };
   let response;
-  try { response = await fetchImpl(`${REGISTRY}polishup/latest`, { signal: AbortSignal.timeout(8000), redirect: 'error' }); }
+  try { response = await fetchImpl(`${REGISTRY}${encodeURIComponent(PACKAGE_NAME)}/latest`, { signal: AbortSignal.timeout(8000), redirect: 'error' }); }
   catch (error) { throw new Error(`Could not check for updates: ${error.message}. The installation was not changed. Retry when the registry is available.`); }
   if (!response.ok) throw new Error(`Update registry returned HTTP ${response.status}. The installation was not changed. Retry later.`);
   const latest = await response.json();
-  if (latest.name !== 'polishup' || !stableVersion(latest.version)) throw new Error('Invalid update package identity or version.');
+  if (latest.name !== PACKAGE_NAME || !stableVersion(latest.version)) throw new Error('Invalid update package identity or version.');
   return compareVersions(latest.version, metadata.version) > 0 ? { kind: 'newer', version: latest.version } : { kind: 'current' };
 }
 
 export function updateInvocation(version, args, npmCli) {
   if (!stableVersion(version)) throw new Error('Invalid update version.');
   return { executable: process.execPath, args: [npmCli, 'exec', '--yes', `--registry=${REGISTRY}`,
-    `--package=polishup@${version}`, '--', 'polishup', 'update', ...args] };
+    `--package=${PACKAGE_NAME}@${version}`, '--', 'polishup', 'update', ...args] };
 }
 
 export function forwardedTargetArgs({ agent, agents, scope, profile, destination, replace = false }) {
@@ -37,7 +37,7 @@ function findNpmCli(env) {
     path.resolve(path.dirname(process.execPath), '../lib/node_modules/npm/bin/npm-cli.js'),
   ].filter(Boolean);
   const found = candidates.find(file => fs.existsSync(file) && fs.statSync(file).isFile());
-  if (!found) throw new Error('npm-cli.js could not be located. Run npx polishup@latest update instead.');
+  if (!found) throw new Error(`npm-cli.js could not be located. Run npx ${PACKAGE_NAME}@latest update instead.`);
   return found;
 }
 

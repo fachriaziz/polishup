@@ -7,11 +7,13 @@ import { spawnSync } from 'node:child_process';
 import { nativeExports } from '../scripts/export-native.mjs';
 import { HOSTS, getTarget } from '../cli/hosts.mjs';
 
+const packageName = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).name;
+
 function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup-exports-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'skills/polishup/references'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: 'polishup', version: '0.1.0' }));
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.0' }));
   fs.writeFileSync(path.join(root, 'skills/polishup/SKILL.md'), '---\nname: polishup\ndescription: Test\n---\nRead references/topic.md.\n');
   fs.writeFileSync(path.join(root, 'skills/polishup/references/topic.md'), 'Original guidance.\n');
   return root;

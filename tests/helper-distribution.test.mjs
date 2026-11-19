@@ -9,6 +9,7 @@ import { loadPayload, getManualTarget, plan, apply } from '../cli/installations.
 import { nativeExports } from '../scripts/export-native.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+const packageName = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).name;
 function temporary(t) {
   const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup helper ü ')));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
@@ -66,7 +67,7 @@ test('native export generation includes helper resources and preserves update ch
   const directory = temporary(t);
   fs.mkdirSync(path.join(directory, 'skills/polishup/references'), { recursive: true });
   fs.mkdirSync(path.join(directory, 'skills/polishup/scripts'));
-  fs.writeFileSync(path.join(directory, 'package.json'), JSON.stringify({ name: 'polishup', version: '0.1.0' }));
+  fs.writeFileSync(path.join(directory, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.0' }));
   fs.writeFileSync(path.join(directory, 'skills/polishup/SKILL.md'), 'Test skill');
   fs.writeFileSync(path.join(directory, 'skills/polishup/scripts/color.mjs'), 'export const value = 1;\n');
   fs.writeFileSync(path.join(directory, 'skills/polishup/scripts/NOTICE.txt'), 'License notice\n');

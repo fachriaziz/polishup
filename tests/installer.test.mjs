@@ -8,7 +8,7 @@ import { test, mock } from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const entry = path.join(root, 'cli/index.mjs');
-const packageVersion = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+const { name: packageName, version: packageVersion } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
 function fixture(t) {
   const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup test caf\u00e9 \u6e2c\u8a66 ')));
@@ -18,7 +18,7 @@ function fixture(t) {
   const source = path.join(base, 'package');
   const skillSource = path.join(source, 'skills/polishup');
   for (const directory of [cwd, path.join(cwd, '.git'), home, path.join(skillSource, 'references')]) fs.mkdirSync(directory, { recursive: true });
-  fs.writeFileSync(path.join(source, 'package.json'), JSON.stringify({ name: 'polishup', version: '0.1.0', private: true }));
+  fs.writeFileSync(path.join(source, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.0', private: true }));
   fs.writeFileSync(path.join(skillSource, 'SKILL.md'), '---\nname: polishup\ndescription: Test skill\n---\nPreserve existing work.\n');
   fs.writeFileSync(path.join(skillSource, 'references/topic.md'), 'Test guidance.\n');
   return { cwd, home, source, skillSource, base, env: {} };
@@ -59,13 +59,13 @@ test('help uses commands appropriate to the package publication status', async t
   const local = spawnSync(process.execPath, [localEntry, '--help'], { cwd: f.cwd, encoding: 'utf8' });
   assert.equal(local.status, 0, local.stderr);
   assert.match(local.stdout, /node "<path-to-polishup>\/cli\/index\.mjs" update/);
-  assert.doesNotMatch(local.stdout, /npx polishup/);
+  assert.doesNotMatch(local.stdout, /npx /);
   assert.deepEqual(fs.readdirSync(f.cwd), ['.git']);
 
-  fs.writeFileSync(path.join(f.source, 'package.json'), JSON.stringify({ name: 'polishup', version: '0.1.0', private: false }));
+  fs.writeFileSync(path.join(f.source, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.0', private: false }));
   const published = spawnSync(process.execPath, [localEntry, '--help'], { cwd: f.cwd, encoding: 'utf8' });
   assert.equal(published.status, 0, published.stderr);
-  assert.match(published.stdout, /npx polishup update/);
+  assert.ok(published.stdout.includes(`npx ${packageName} update`));
   assert.doesNotMatch(published.stdout, /<path-to-polishup>/);
   assert.deepEqual(fs.readdirSync(f.cwd), ['.git']);
 });
@@ -203,7 +203,7 @@ for (const agent of ['codex', 'opencode']) {
     const receiptPath = path.join(target.skillDir, '.polishup-install.json');
     const receiptBytes = fs.readFileSync(receiptPath);
     const commandBytes = target.commandFile ? fs.readFileSync(target.commandFile) : null;
-    fs.writeFileSync(path.join(f.source, 'package.json'), JSON.stringify({ name: 'polishup', version: '0.1.1', private: true }));
+    fs.writeFileSync(path.join(f.source, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.1', private: true }));
     const newer = loadPayload(f.source);
     assert.equal(newer.revision, original.revision);
     const update = plan(target, newer, 'update');
