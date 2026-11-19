@@ -12,15 +12,17 @@ Bundled knowledge covers the domains below. Other fields, such as 3D work, data 
 
 ## Installation
 
-### Local installer
+### Installer
 
-The npm package is not published. With Node.js 22 or newer, open a terminal in the destination project. Replace `<path-to-polishup>` with the absolute path to this checkout or an extracted installer package:
+With Node.js 22 or newer, open a terminal in the destination project:
 
 ```text
-node "<path-to-polishup>/cli/index.mjs"
+npx polishup
 ```
 
 Choose one or more harnesses and project or personal scope. `install` is an optional alias for the same setup. Project scope uses the nearest Git root, or the current directory without Git. Running from the PolishUp checkout selects that checkout, not another project.
+
+For a source checkout or extracted installer package, use `node "<path-to-polishup>/cli/index.mjs"` instead, replacing the placeholder with its absolute package directory.
 
 The installer supports the nine harnesses below and custom destinations. It checks conflicts, preserves backups outside skill discovery, and displays the affected paths. Shared project locations are written once; failures in independent targets are reported separately.
 
@@ -92,14 +94,14 @@ Domain rules and topic references apply selectively. Interface styling restricti
 
 ## Update and uninstall
 
-Run from the destination project, using the same package path:
+Run from the destination project:
 
 ```text
-node "<path-to-polishup>/cli/index.mjs" update
-node "<path-to-polishup>/cli/index.mjs" uninstall
+npx polishup update
+npx polishup uninstall
 ```
 
-The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`. This private build updates from the bundled files, so obtain the newer source/package first; registry updates are disabled.
+The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`. Updates check the npm registry for a newer installer before applying managed changes.
 
 Keep the displayed backup paths and inspect interrupted-operation locks before removing them. Uninstalling one registered Codex, Antigravity, or Hermes project consumer retains shared files while another registered consumer remains. Other readers of compatible paths cannot be enumerated.
 
@@ -155,8 +157,6 @@ To create an archive, omit `--dry-run` and add `--pack-destination <existing-out
 Notable user-facing changes belong in the source checkout's `CHANGELOG.md`. Routine internal cleanup and research notes are not release notes.
 
 ## Project status
-
-The npm package remains private and unpublished; `npx polishup` is not a current installation route. Public package ownership remains pending.
 
 The installer targets Windows, Linux, and macOS, subject to host availability. The [Checks workflow](https://github.com/fachriaziz/polishup/actions/workflows/checks.yml) runs installer and package checks on all three OS families using Node.js 22; inspect the latest run for results. Mechanical checks do not establish automatic activation, output quality, token savings, or cross-harness effectiveness.
 

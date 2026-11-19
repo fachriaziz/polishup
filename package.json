@@ -18,8 +18,10 @@
     "ui-ux",
     "code-quality"
   ],
-  "private": true,
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "bin": {
     "polishup": "cli/index.mjs"

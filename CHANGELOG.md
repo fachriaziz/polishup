@@ -6,6 +6,7 @@ Notable user-facing changes only. Unreleased work has no release date.
 
 ### Added
 
+- Direct npm CLI installation and registry-backed updates for published releases.
 - MIT license for PolishUp, included in the npm package and standalone skill installations; third-party notices remain intact.
 - On-demand tool selection and verification guidance for scoped inspection, responsive/content checks, interaction and accessibility, and preservation of existing work.
 - Local color-pair checks, named harmony candidates, constrained role adjustment, and an explicitly requested static preview, with structured results and distinct incomplete/error outcomes.

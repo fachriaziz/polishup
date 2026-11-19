@@ -8,6 +8,7 @@ import { test, mock } from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const entry = path.join(root, 'cli/index.mjs');
+const packageVersion = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
 
 function fixture(t) {
   const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup test caf\u00e9 \u6e2c\u8a66 ')));
@@ -29,7 +30,9 @@ async function api() {
 }
 
 function run(args, f) {
-  const env = { ...process.env, HOME: f.home, USERPROFILE: f.home, LOCALAPPDATA: f.home };
+  // Exercise lifecycle changes after version resolution; update.test.mjs checks registry decisions.
+  const env = { ...process.env, HOME: f.home, USERPROFILE: f.home, LOCALAPPDATA: f.home,
+    POLISHUP_UPDATE_HANDOFF: packageVersion };
   for (const key of ['OPENCODE_CONFIG_DIR', 'XDG_CONFIG_HOME', 'CLAUDE_CONFIG_DIR', 'CODEX_HOME', 'HERMES_HOME',
     'HERMES_DATA_DIR_SUFFIX', 'GEMINI_CLI_HOME', 'PI_CODING_AGENT_DIR', 'OMP_PROFILE', 'PI_PROFILE', 'PI_CONFIG_DIR', 'XDG_DATA_HOME']) delete env[key];
   return spawnSync(process.execPath, [entry, ...args], { cwd: f.cwd, env, encoding: 'utf8' });
