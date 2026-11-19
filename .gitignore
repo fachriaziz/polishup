@@ -1,0 +1,21 @@
+# Dependencies and local output
+node_modules/
+*.tgz
+*.log
+/coverage/
+/.cache/
+
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+.npmrc
+.venv/
+.venv-*/
+__pycache__/
+
+# Local development context and OS files
+/memory/
+.DS_Store
+Thumbs.db

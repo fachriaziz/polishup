@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "polishup",
+  "version": "0.1.0",
+  "description": "Research-informed creation, refinement, and review across fields, with specialized Writing, UI/UX, and Code guidance.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "PolishUp",
+        "shortDescription": "Research-informed quality across fields",
+        "defaultPrompt": [
+          "Use PolishUp to review this draft without changing it.",
+          "Use PolishUp to refine this interface while preserving its visual identity.",
+          "Use PolishUp to plan a Blender product render using research relevant to my version and delivery requirements."
+        ]
+      }
+    }
+  }
+}

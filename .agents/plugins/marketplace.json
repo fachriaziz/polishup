@@ -1,0 +1,20 @@
+{
+  "name": "polishup-local",
+  "interface": {
+    "displayName": "PolishUp (Local)"
+  },
+  "plugins": [
+    {
+      "name": "polishup",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

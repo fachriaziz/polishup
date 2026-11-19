@@ -1,0 +1,33 @@
+{
+  "name": "polishup",
+  "version": "0.1.0",
+  "description": "Install PolishUp research-informed quality guidance across fields in agent harnesses.",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "bin": {
+    "polishup": "cli/index.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "skills/polishup/SKILL.md",
+    "skills/polishup/references/",
+    "skills/polishup/scripts/",
+    ".opencode/commands/polishup.md",
+    "cli/index.mjs",
+    "cli/hosts.mjs",
+    "cli/installations.mjs",
+    "cli/update.mjs"
+  ],
+  "scripts": {
+    "test": "npm run check && node --test tests/*.test.mjs",
+    "sync": "node scripts/prepare-tools.mjs && node scripts/export-native.mjs",
+    "check": "node scripts/prepare-tools.mjs --check && node scripts/export-native.mjs --check"
+  },
+  "devDependencies": {
+    "colorjs.io": "0.7.1",
+    "esbuild": "0.28.2"
+  }
+}

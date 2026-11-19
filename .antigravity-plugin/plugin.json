@@ -1,0 +1,12 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "polishup",
+  "displayName": "PolishUp",
+  "version": "0.1.0",
+  "description": "Research-informed creation, refinement, and review across fields, with specialized Writing, UI/UX, and Code guidance.",
+  "suggestedPrompts": [
+    "Use PolishUp to review this draft without changing it.",
+    "Use PolishUp to refine this interface while preserving its visual identity.",
+    "Use PolishUp to plan a Blender product render using research relevant to my version and delivery requirements."
+  ]
+}

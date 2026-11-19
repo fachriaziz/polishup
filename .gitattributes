@@ -1,0 +1,13 @@
+# Preserve existing bytes and generated hashes without rewriting knowledge line endings.
+*.mjs text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+skills/polishup/** -text
+.cursor/skills/polishup/** -text
+.omp/skills/polishup/** -text
+.agents/skills/polishup/** -text
+.claude/skills/polishup/** -text
+.opencode/skills/polishup/** -text
+.opencode/commands/polishup.md -text
+.gemini/skills/polishup/** -text
+.github/skills/polishup/** -text
