@@ -1,8 +1,8 @@
 # Changelog
 
-Notable user-facing changes only. Unreleased work has no release date.
+Notable user-facing changes only. Release dates use UTC.
 
-## [Unreleased]
+## [0.1.0] - 2026-11-19
 
 ### Added
 
