@@ -1,5 +1,6 @@
 ---
 name: polishup
+license: MIT
 description: Guide creation, refinement, and review of deliverables using task-specific research and professional quality criteria. Use when drafting, designing, implementing, editing, debugging, or evaluating work across fields. Includes specialized Writing, UI/UX, and Code references; other fields use task-specific research. Not for casual conversation, standalone factual questions or calculations, or isolated word translations.
 metadata:
   version: "0.1"

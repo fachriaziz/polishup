@@ -10,6 +10,10 @@ test('source plugin contains one portable skill and ready native resources', asy
   const root = fileURLToPath(new URL('../', import.meta.url));
   const metadata = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
   const skillRoot = path.join(root, 'skills/polishup');
+  assert.equal(metadata.license, 'MIT');
+  const license = fs.readFileSync(path.join(root, 'LICENSE'), 'utf8');
+  assert.match(license, /^MIT License\n/);
+  assert.equal(fs.readFileSync(path.join(skillRoot, 'LICENSE.txt'), 'utf8'), license);
   assert.ok(fs.existsSync(path.join(root, 'cli/hosts.mjs')), 'Host path resolution must ship with the installer');
   assert.ok(fs.existsSync(path.join(skillRoot, 'SKILL.md')), 'The canonical skill must exist in source');
   assert.equal(fs.existsSync(path.join(root, 'SKILL.md')), false, 'Do not advertise a second root skill');
@@ -35,7 +39,9 @@ test('source plugin contains one portable skill and ready native resources', asy
   assert.equal(antigravity.$schema, 'https://antigravity.google/schemas/v1/plugin.json');
   assert.ok(antigravity.suggestedPrompts.length > 0 && antigravity.suggestedPrompts.length <= 3);
   const { loadPayload } = await import('../cli/installations.mjs');
-  assert.equal(Object.keys(loadPayload(root).files).length, 37);
+  const payload = loadPayload(root);
+  assert.equal(Object.keys(payload.files).length, 38);
+  assert.equal(payload.files['LICENSE.txt'].toString('utf8'), license);
   assert.equal(Object.keys(metadata.dependencies || {}).length, 0, 'Installed CLI must not need npm runtime dependencies');
 });
 
@@ -60,7 +66,7 @@ test('npm packs the complete installer directly from source without development 
   assert.equal(packed.name, 'polishup');
   const { loadPayload } = await import('../cli/installations.mjs');
   const core = Object.keys(loadPayload(root).files).map(file => 'skills/polishup/' + file);
-  const expected = [...core, 'README.md', 'package.json', '.opencode/commands/polishup.md',
+  const expected = [...core, 'README.md', 'LICENSE', 'package.json', '.opencode/commands/polishup.md',
     'cli/index.mjs', 'cli/hosts.mjs', 'cli/installations.mjs', 'cli/update.mjs'];
   assert.deepEqual(packed.files.map(file => file.path).sort(), expected.sort());
   const included = new Set(packed.files.map(file => file.path));

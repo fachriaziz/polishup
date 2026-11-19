@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Install PolishUp research-informed quality guidance across fields in agent harnesses.",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "polishup": "cli/index.mjs"
@@ -13,6 +13,7 @@
   },
   "files": [
     "skills/polishup/SKILL.md",
+    "skills/polishup/LICENSE.txt",
     "skills/polishup/references/",
     "skills/polishup/scripts/",
     ".opencode/commands/polishup.md",

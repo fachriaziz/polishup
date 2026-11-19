@@ -406,7 +406,7 @@ test('a stale operation or interrupted-operation lock cannot overwrite newer sta
   assert.throws(() => plan(target, payload, 'uninstall'), /interrupted operation|lock/i);
 });
 
-test('CLI optional flags support noninteractive lifecycle and the real 37-file payload', t => {
+test('CLI optional flags support noninteractive lifecycle and the complete licensed payload', t => {
   const f = fixture(t);
   const flags = ['--agent', 'codex', '--scope', 'project'];
   const preview = run(['install', ...flags, '--dry-run'], f);
@@ -416,7 +416,9 @@ test('CLI optional flags support noninteractive lifecycle and the real 37-file p
   assert.equal(run(flags, f).status, 0);
   const skill = path.join(f.cwd, '.agents/skills/polishup');
   const receipt = JSON.parse(fs.readFileSync(path.join(skill, '.polishup-install.json')));
-  assert.equal(Object.keys(receipt.files).length, 37);
+  assert.equal(Object.keys(receipt.files).length, 38);
+  assert.equal(fs.readFileSync(path.join(skill, 'LICENSE.txt'), 'utf8'),
+    fs.readFileSync(path.join(root, 'LICENSE'), 'utf8'));
   assert.equal(run(['update', ...flags], f).status, 0);
   assert.equal(run(['uninstall', ...flags], f).status, 0);
   assert.equal(fs.existsSync(skill), false);

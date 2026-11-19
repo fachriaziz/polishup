@@ -6,6 +6,7 @@ Notable user-facing changes only. Unreleased work has no release date.
 
 ### Added
 
+- MIT license for PolishUp, included in the npm package and standalone skill installations; third-party notices remain intact.
 - On-demand tool selection and verification guidance for scoped inspection, responsive/content checks, interaction and accessibility, and preservation of existing work.
 - Local color-pair checks, named harmony candidates, constrained role adjustment, and an explicitly requested static preview, with structured results and distinct incomplete/error outcomes.
 - A self-contained color helper and dependency notice included in manual, native and installer skill copies; Node is required for execution, with no global CLI or npm runtime dependencies.

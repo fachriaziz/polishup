@@ -49,6 +49,8 @@ export function loadPayload(packageRoot) {
   const metadata = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   const skillRoot = assertSafePath(path.join(packageRoot, 'skills', 'polishup'));
   const files = { 'SKILL.md': fs.readFileSync(assertSafePath(path.join(skillRoot, 'SKILL.md'))) };
+  const license = path.join(skillRoot, 'LICENSE.txt');
+  if (fs.existsSync(license)) files['LICENSE.txt'] = fs.readFileSync(assertSafePath(license));
   Object.assign(files, filesIn(path.join(skillRoot, 'references'), 'references/'));
   const scripts = path.join(skillRoot, 'scripts');
   if (fs.existsSync(scripts)) Object.assign(files, filesIn(scripts, 'scripts/'));

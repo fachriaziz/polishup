@@ -28,7 +28,7 @@ Use `--help` for optional flags. `--dry-run` previews changes; `--agent` and `--
 
 ### Manual installation
 
-Copy the complete `skills/polishup/` directory to one destination below. Preserve `SKILL.md`, `references/`, `scripts/`, notices and relative paths; avoid an extra nested `skills/polishup/` inside the destination. Copying and reading the skill needs no runtime or package manager. The optional executable helper needs Node.js 22+.
+Copy the complete `skills/polishup/` directory to one destination below. Preserve `SKILL.md`, `LICENSE.txt`, `references/`, `scripts/`, notices and relative paths; avoid an extra nested `skills/polishup/` inside the destination. Copying and reading the skill needs no runtime or package manager. The optional executable helper needs Node.js 22+.
 
 | Harness | Project skill directory | Default personal skill directory |
 | --- | --- | --- |
@@ -156,6 +156,10 @@ Notable user-facing changes belong in the source checkout's `CHANGELOG.md`. Rout
 
 ## Project status
 
-Public package ownership, hosting, licensing, and applicable attribution remain unresolved. The package stays private and UNLICENSED; `npx polishup` is not a current installation route.
+The npm package remains private and unpublished; `npx polishup` is not a current installation route. Public package ownership and hosting remain pending.
 
 The installer targets Windows, Linux, and macOS, subject to host availability. Windows checks cover installer regressions and isolated Codex CLI marketplace registration and plugin installation. Three-OS CI is configured in the source workspace, but hosted results remain unverified. Mechanical checks do not establish automatic activation, output quality, token savings, or cross-harness effectiveness.
+
+## License
+
+[MIT](LICENSE), copyright (c) 2026 fachriaziz. Standalone skill copies include `LICENSE.txt`; the bundled Color.js helper retains its [third-party notice](skills/polishup/scripts/NOTICE.txt).
