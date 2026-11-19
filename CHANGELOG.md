@@ -6,6 +6,7 @@ Notable user-facing changes only. Unreleased work has no release date.
 
 ### Added
 
+- `npm start` for running the local installer from a checkout or extracted package.
 - Direct npm CLI installation and registry-backed updates for published releases.
 - MIT license for PolishUp, included in the npm package and standalone skill installations; third-party notices remain intact.
 - On-demand tool selection and verification guidance for scoped inspection, responsive/content checks, interaction and accessibility, and preservation of existing work.

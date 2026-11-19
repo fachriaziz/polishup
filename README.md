@@ -12,17 +12,17 @@ Bundled knowledge covers the domains below. Other fields, such as 3D work, data 
 
 ## Installation
 
-### Installer
+### Local installer
 
-With Node.js 22 or newer, open a terminal in the destination project:
+With Node.js 22 or newer, open a terminal in the PolishUp checkout or extracted installer package:
 
 ```text
-npx polishup
+npm start
 ```
 
 Choose one or more harnesses and project or personal scope. `install` is an optional alias for the same setup. Project scope uses the nearest Git root, or the current directory without Git. Running from the PolishUp checkout selects that checkout, not another project.
 
-For a source checkout or extracted installer package, use `node "<path-to-polishup>/cli/index.mjs"` instead, replacing the placeholder with its absolute package directory.
+This runs the local installer without downloading PolishUp from npm. To target another project, run `node "<path-to-polishup>/cli/index.mjs"` from that project's directory instead. Registry installation is not available yet; use this local route or manual installation.
 
 The installer supports the nine harnesses below and custom destinations. It checks conflicts, preserves backups outside skill discovery, and displays the affected paths. Shared project locations are written once; failures in independent targets are reported separately.
 
@@ -94,14 +94,14 @@ Domain rules and topic references apply selectively. Interface styling restricti
 
 ## Update and uninstall
 
-Run from the destination project:
+For a Git checkout, pull the current source and run the local installer again to apply it to the selected destinations:
 
 ```text
-npx polishup update
-npx polishup uninstall
+git pull
+npm start
 ```
 
-The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`. Updates check the npm registry for a newer installer before applying managed changes.
+To uninstall, run `npm start -- uninstall` from the checkout or extracted package. The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`. The separate `update` action checks the npm registry and requires a published package.
 
 Keep the displayed backup paths and inspect interrupted-operation locks before removing them. Uninstalling one registered Codex, Antigravity, or Hermes project consumer retains shared files while another registered consumer remains. Other readers of compatible paths cannot be enumerated.
 

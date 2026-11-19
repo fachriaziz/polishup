@@ -41,6 +41,7 @@
     "cli/update.mjs"
   ],
   "scripts": {
+    "start": "node cli/index.mjs",
     "test": "npm run check && node --test tests/*.test.mjs",
     "sync": "node scripts/prepare-tools.mjs && node scripts/export-native.mjs",
     "check": "node scripts/prepare-tools.mjs --check && node scripts/export-native.mjs --check"
