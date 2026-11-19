@@ -117,11 +117,13 @@ test('Git preserves knowledge bytes and checks out executable modules with LF', 
   const root = fixture(t);
   const relative = 'skills/polishup/references/topic.md';
   fs.writeFileSync(path.join(root, relative), 'Preserve these bytes.\r\n');
+  fs.copyFileSync(new URL('../LICENSE', import.meta.url), path.join(root, 'LICENSE'));
+  fs.copyFileSync(new URL('../LICENSE', import.meta.url), path.join(root, 'skills/polishup/LICENSE.txt'));
   nativeExports({ root });
   fs.copyFileSync(new URL('../.gitattributes', import.meta.url), path.join(root, '.gitattributes'));
   fs.mkdirSync(path.join(root, 'cli'));
   fs.writeFileSync(path.join(root, 'cli/index.mjs'), '#!/usr/bin/env node\r\nconsole.log("ok");\r\n');
-  for (const args of [['init', '--quiet'], ['-c', 'core.autocrlf=true', 'add', '.gitattributes', 'skills', '.cursor', '.omp', 'cli']]) {
+  for (const args of [['init', '--quiet'], ['-c', 'core.autocrlf=true', 'add', '.gitattributes', 'LICENSE', 'skills', '.cursor', '.omp', 'cli']]) {
     const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
     assert.equal(result.status, 0, result.stderr);
   }
@@ -131,7 +133,9 @@ test('Git preserves knowledge bytes and checks out executable modules with LF', 
     assert.deepEqual(indexed.stdout, fs.readFileSync(path.join(root, file)));
   }
   fs.unlinkSync(path.join(root, 'cli/index.mjs'));
-  const checkout = spawnSync('git', ['-c', 'core.autocrlf=true', 'checkout-index', '--force', '--', 'cli/index.mjs'], { cwd: root, encoding: 'utf8' });
+  fs.unlinkSync(path.join(root, 'LICENSE'));
+  const checkout = spawnSync('git', ['-c', 'core.autocrlf=true', 'checkout-index', '--force', '--', 'cli/index.mjs', 'LICENSE'], { cwd: root, encoding: 'utf8' });
   assert.equal(checkout.status, 0, checkout.stderr);
   assert.equal(fs.readFileSync(path.join(root, 'cli/index.mjs'), 'utf8'), '#!/usr/bin/env node\nconsole.log("ok");\n');
+  assert.deepEqual(fs.readFileSync(path.join(root, 'LICENSE')), fs.readFileSync(path.join(root, 'skills/polishup/LICENSE.txt')));
 });

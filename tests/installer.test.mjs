@@ -47,9 +47,9 @@ test('help and the install alias do not require an interactive terminal', t => {
   assert.deepEqual(fs.readdirSync(f.cwd), ['.git']);
 });
 
-test('help uses commands appropriate to the package publication status', t => {
+test('help uses commands appropriate to the package publication status', async t => {
   const f = fixture(t);
-  fs.cpSync(path.join(root, 'cli'), path.join(f.source, 'cli'), { recursive: true });
+  await fs.promises.cp(path.join(root, 'cli'), path.join(f.source, 'cli'), { recursive: true });
   fs.mkdirSync(path.join(f.source, '.opencode/commands'), { recursive: true });
   fs.copyFileSync(path.join(root, '.opencode/commands/polishup.md'), path.join(f.source, '.opencode/commands/polishup.md'));
   const localEntry = path.join(f.source, 'cli/index.mjs');
@@ -427,7 +427,7 @@ test('CLI optional flags support noninteractive lifecycle and the complete licen
 test('CLI supports Antigravity and Hermes plus an explicit Hermes profile', async t => {
   const f = fixture(t);
   const { getTarget } = await api();
-  const hermesHome = path.join(f.home, 'hermes');
+  const hermesHome = path.join(f.home, process.platform === 'win32' ? 'hermes' : '.hermes');
   const profileHome = path.join(hermesHome, 'profiles', 'writer');
   fs.mkdirSync(profileHome, { recursive: true });
   assert.equal(getTarget({ ...f, agent: 'hermes', scope: 'user', profile: 'writer', env: { LOCALAPPDATA: f.home } }).configRoot,

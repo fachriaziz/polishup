@@ -2,6 +2,7 @@
 *.mjs text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+LICENSE text eol=lf
 skills/polishup/** -text
 .cursor/skills/polishup/** -text
 .omp/skills/polishup/** -text

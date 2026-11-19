@@ -1,7 +1,23 @@
 {
   "name": "polishup",
   "version": "0.1.0",
-  "description": "Install PolishUp research-informed quality guidance across fields in agent harnesses.",
+  "description": "Research-informed guidance for better AI work across writing, design, code, and more.",
+  "author": "fachriaziz",
+  "homepage": "https://github.com/fachriaziz/polishup#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fachriaziz/polishup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fachriaziz/polishup/issues"
+  },
+  "keywords": [
+    "agent-skills",
+    "ai-agents",
+    "writing",
+    "ui-ux",
+    "code-quality"
+  ],
   "private": true,
   "license": "MIT",
   "type": "module",

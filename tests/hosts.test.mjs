@@ -90,17 +90,21 @@ test('Hermes user scope honors the effective home and named profile without writ
   const env = { LOCALAPPDATA: path.join(f.home, 'AppData', 'Local') };
   const custom = path.join(f.root, 'hermes-custom');
   fs.mkdirSync(path.join(custom, 'profiles', 'writer'), { recursive: true });
-  const envTarget = getTarget({ ...f, agent: 'hermes', scope: 'user', home: f.home, env: { ...env, HERMES_HOME: custom } });
-  assert.equal(envTarget.skillDir, path.join(custom, 'skills', 'polishup'));
-  assert.equal(envTarget.profile, 'custom');
-  const profile = path.join(env.LOCALAPPDATA, 'hermes', 'profiles', 'writer');
-  fs.mkdirSync(profile, { recursive: true });
-  assert.equal(getTarget({ ...f, agent: 'hermes', scope: 'user', home: f.home, env, profile: 'writer' }).skillDir,
-    path.join(profile, 'skills', 'polishup'));
-  assert.equal(getTarget({ ...f, agent: 'hermes', scope: 'user', home: f.home, env: { ...env, HERMES_HOME: custom }, profile: 'writer' }).skillDir,
-    path.join(custom, 'profiles', 'writer', 'skills', 'polishup'));
-  assert.throws(() => getTarget({ ...f, agent: 'hermes', scope: 'user', home: f.home, env, profile: 'missing' }), /does not exist/i);
-  assert.throws(() => getTarget({ ...f, agent: 'hermes', scope: 'user', home: f.home, env, profile: 'Bad Name' }), /profile name/i);
+  for (const platform of ['win32', 'linux', 'darwin']) {
+    const options = { ...f, agent: 'hermes', scope: 'user', home: f.home, platform };
+    const envTarget = getTarget({ ...options, env: { ...env, HERMES_HOME: custom } });
+    assert.equal(envTarget.skillDir, path.join(custom, 'skills', 'polishup'));
+    assert.equal(envTarget.profile, 'custom');
+    const defaultHome = platform === 'win32' ? path.join(env.LOCALAPPDATA, 'hermes') : path.join(f.home, '.hermes');
+    const profile = path.join(defaultHome, 'profiles', 'writer');
+    fs.mkdirSync(profile, { recursive: true });
+    assert.equal(getTarget({ ...options, env, profile: 'writer' }).skillDir,
+      path.join(profile, 'skills', 'polishup'));
+    assert.equal(getTarget({ ...options, env: { ...env, HERMES_HOME: custom }, profile: 'writer' }).skillDir,
+      path.join(custom, 'profiles', 'writer', 'skills', 'polishup'));
+    assert.throws(() => getTarget({ ...options, env, profile: 'missing' }), /does not exist/i);
+    assert.throws(() => getTarget({ ...options, env, profile: 'Bad Name' }), /profile name/i);
+  }
 });
 
 test('Hermes home variables follow the selected operating system', t => {

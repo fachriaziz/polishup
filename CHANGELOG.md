@@ -29,6 +29,7 @@ Notable user-facing changes only. Unreleased work has no release date.
 
 ### Fixed
 
+- Consistent MIT license line endings across Windows checkouts and standalone skill copies.
 - Update and uninstall now select registered installation consumers instead of treating compatible readers of a shared folder as separate installations.
 - Package-version-only updates now refresh the installed version record while preserving unchanged skill content and existing installer safeguards.
 - Personal-directory overrides and OS-specific path handling, including Gemini custom homes and Hermes environment expansion.

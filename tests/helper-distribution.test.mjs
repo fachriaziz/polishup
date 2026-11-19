@@ -21,10 +21,10 @@ function invoke(skill, args, cwd, input) {
   });
 }
 
-test('a manually copied skill runs its helper without a package or node_modules', t => {
+test('a manually copied skill runs its helper without a package or node_modules', async t => {
   const directory = temporary(t);
   const skill = path.join(directory, 'copied skill', 'polishup');
-  fs.cpSync(path.join(root, 'skills/polishup'), skill, { recursive: true });
+  await fs.promises.cp(path.join(root, 'skills/polishup'), skill, { recursive: true });
   assert.equal(fs.existsSync(path.join(directory, 'package.json')), false);
   assert.equal(fs.existsSync(path.join(directory, 'node_modules')), false);
   for (const [color, status, result] of [['#000', 0, 'pass'], ['#777', 1, 'fail'], ['#0008', 3, 'incomplete'], ['bad', 2, 'error']]) {

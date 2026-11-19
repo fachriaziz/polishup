@@ -156,9 +156,9 @@ Notable user-facing changes belong in the source checkout's `CHANGELOG.md`. Rout
 
 ## Project status
 
-The npm package remains private and unpublished; `npx polishup` is not a current installation route. Public package ownership and hosting remain pending.
+The npm package remains private and unpublished; `npx polishup` is not a current installation route. Public package ownership remains pending.
 
-The installer targets Windows, Linux, and macOS, subject to host availability. Windows checks cover installer regressions and isolated Codex CLI marketplace registration and plugin installation. Three-OS CI is configured in the source workspace, but hosted results remain unverified. Mechanical checks do not establish automatic activation, output quality, token savings, or cross-harness effectiveness.
+The installer targets Windows, Linux, and macOS, subject to host availability. The [Checks workflow](https://github.com/fachriaziz/polishup/actions/workflows/checks.yml) runs installer and package checks on all three OS families using Node.js 22; inspect the latest run for results. Mechanical checks do not establish automatic activation, output quality, token savings, or cross-harness effectiveness.
 
 ## License
 
