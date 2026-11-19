@@ -33,10 +33,10 @@ Use `--help` for optional flags. `--dry-run` previews changes; `--agent` and `--
 With Node.js 22 or newer, run from the destination project:
 
 ```text
-npx polishup
+npx polishup-cli
 ```
 
-The npm package provides the installer and optional helper tools. The skill, plugin and executable are named `polishup`. No npm account is needed to install a public package.
+The npm package is named `polishup-cli`; the skill, plugin and executable remain `polishup`. No npm account is needed to install a public package.
 
 ### Manual installation
 
@@ -111,7 +111,7 @@ git pull
 npm start
 ```
 
-For npm installations, run `npx polishup update` from the destination project. This checks the registry for a newer installer before applying managed changes. Use `npx polishup uninstall` to remove a registered installation.
+For npm installations, run `npx polishup-cli update` from the destination project. This checks the registry for a newer installer before applying managed changes. Use `npx polishup-cli uninstall` to remove a registered installation.
 
 For a checkout or extracted package, use `npm start -- uninstall`. The CLI selects a single registered consumer automatically or asks you to choose among registered consumers. Unmanaged folders require explicit harness selection; custom destinations require `--agent manual --destination <path> --scope project|user`.
 
