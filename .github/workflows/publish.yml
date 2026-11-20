@@ -1,0 +1,77 @@
+name: Publish to npm
+
+"on":
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag, for example v0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Use a pinned npm version with trusted publishing
+        run: npm install --global npm@12.2.2 --ignore-scripts --no-audit --no-fund
+      - name: Verify release identity
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const tag = process.env.RELEASE_TAG;
+          if (!/^v\d+\.\d+\.\d+$/.test(tag) || tag !== `v${pkg.version}`) {
+            throw new Error('Release tag must match the package version.');
+          }
+          if (pkg.name !== 'polishup-cli' || pkg.publishConfig?.registry !== 'https://registry.npmjs.org/') {
+            throw new Error('Unexpected package identity or registry.');
+          }
+          NODE
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check package and native skill copies
+        run: npm test
+      - name: Check whether this version is already published
+        id: registry
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const response = await fetch(`https://registry.npmjs.org/${pkg.name}/${pkg.version}`, {
+            signal: AbortSignal.timeout(30000),
+          });
+          if (response.status !== 200 && response.status !== 404) {
+            throw new Error(`Registry check failed with HTTP ${response.status}.`);
+          }
+          const published = response.status === 200;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `published=${published}\n`);
+          if (published) console.log(`${pkg.name}@${pkg.version} already exists; publication skipped.`);
+          NODE
+      - name: Publish using npm trusted publishing
+        if: steps.registry.outputs.published != 'true'
+        run: npm publish --access public --tag latest --ignore-scripts

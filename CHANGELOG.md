@@ -2,6 +2,12 @@
 
 Notable user-facing changes only. Release dates use UTC.
 
+## [Unreleased]
+
+### Added
+
+- GitHub Actions publishing through npm Trusted Publishing, with release-tag checks, package tests, and a manual publishing option for existing tags.
+
 ## [0.2.0] - 2026-11-20
 
 ### Changed
