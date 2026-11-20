@@ -24,10 +24,11 @@ export function updateInvocation(version, args, npmCli) {
     `--package=${PACKAGE_NAME}@${version}`, '--', 'polishup', 'update', ...args] };
 }
 
-export function forwardedTargetArgs({ agent, agents, scope, profile, destination, replace = false }) {
+export function forwardedTargetArgs({ agent, agents, scope, profile, destination, replace = false, plain = false, noInput = false }) {
   const selected = agents ?? (agent ? [agent] : []);
   return ['--agent', selected.join(','), '--scope', scope, ...(profile ? ['--profile', profile] : []),
-    ...(destination ? ['--destination', destination] : []), ...(replace ? ['--replace'] : [])];
+    ...(destination ? ['--destination', destination] : []), ...(replace ? ['--replace'] : []),
+    ...(plain ? ['--plain'] : []), ...(noInput ? ['--no-input'] : [])];
 }
 
 function findNpmCli(env) {

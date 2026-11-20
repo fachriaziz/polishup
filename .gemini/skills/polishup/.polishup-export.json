@@ -1,14 +1,14 @@
 {
   "schema": 1,
   "generatedBy": "polishup-native-export",
-  "revision": "da67e9c53d97aced328c1257ad1a978561dd9ea7d3e1a3c7ff35508abdad1cf4",
+  "revision": "d6bb4d31ffb7ab9e349640665612ed675ec61a4ebd774e239c4e093d932213b8",
   "files": {
     "LICENSE.txt": "5e05d64213ea78ab26f0ebd7a09810c00bcbd67136f48a7cd93cfe6235c40f90",
     "SKILL.md": "be42c1889ec79207a8ab605f4d8d7db6f658f396376941b8bdc2a7d675d02433",
     "references/code/implementation.md": "26718f13f8caa3df5e6ff85c30e649b41887c4a0215141a8d8ffc080b7284e18",
     "references/code/index.md": "e5fa5aad70c9e0e502f2d93423846364a14eed0d50517250bc12aae8910cfd02",
     "references/code/rules.md": "064269590bc5e5f5e231a7de47cf8b4f3832cdbe634494a35bce6a6c52b8115d",
-    "references/colors.md": "9e152ec3244e9904528ad0bef4391d49823644c653383653e9f55aaa47ee66fb",
+    "references/colors.md": "1c920830bebe64b676fa40a1d851e7e8bba3c69ce5f3b4d667b4b13663894907",
     "references/research.md": "dc626c1913e4f8353ae2636312b8015cef6599ea10e6f7d36b71409441ce6d6a",
     "references/tools.md": "c008d97e18fcd4e3843b2e0a27b2c7153b7bde4775142ef51f54b58a007f4d66",
     "references/ui-ux/accessibility.md": "65a4d9993938bfcc6f57a021201901a6615b27912de387c8d2e30f172bca2d77",
@@ -40,6 +40,6 @@
     "references/writing/rules.md": "d0abb9dd9152a587f439dbc187f35fccb89705c608cca075f52f61a924d4cd13",
     "references/writing/voice-and-tone.md": "cc30fb28607cafe8a2877a75292e136dcc9697e4e8644e2024aee74c8435af79",
     "scripts/NOTICE.txt": "487c85563853230680bcb55508c06e0df7f292c7eba0f1045e13a3246d06d84f",
-    "scripts/color.mjs": "d51b2fd1535810402834ff91e1ab71e81c4ad5b3e4443e791a5f0ad59cc74f07"
+    "scripts/color.mjs": "6e2b019ccf229eccd421c62ec47cce39faa62ef4fdb8e41c98bc5ada62043778"
   }
 }

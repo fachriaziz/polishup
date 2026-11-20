@@ -42,7 +42,7 @@ test('source plugin contains one portable skill and ready native resources', asy
   const payload = loadPayload(root);
   assert.equal(Object.keys(payload.files).length, 38);
   assert.equal(payload.files['LICENSE.txt'].toString('utf8'), license);
-  assert.equal(Object.keys(metadata.dependencies || {}).length, 0, 'Installed CLI must not need npm runtime dependencies');
+  assert.deepEqual(metadata.dependencies, { '@clack/core': '1.6.0', '@clack/prompts': '1.9.0' }, 'Only the CLI prompt libraries are runtime dependencies; the skill and helper remain self-contained');
 });
 
 test('npm packs the complete installer directly from source without development files', async t => {
@@ -68,7 +68,7 @@ test('npm packs the complete installer directly from source without development 
   const { loadPayload } = await import('../cli/installations.mjs');
   const core = Object.keys(loadPayload(root).files).map(file => 'skills/polishup/' + file);
   const expected = [...core, 'README.md', 'LICENSE', 'package.json', '.opencode/commands/polishup.md',
-    'cli/index.mjs', 'cli/hosts.mjs', 'cli/installations.mjs', 'cli/update.mjs'];
+    'cli/index.mjs', 'cli/hosts.mjs', 'cli/detection.mjs', 'cli/menu.mjs', 'cli/prompts.mjs', 'cli/installations.mjs', 'cli/update.mjs'];
   assert.deepEqual(packed.files.map(file => file.path).sort(), expected.sort());
   const included = new Set(packed.files.map(file => file.path));
   const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');

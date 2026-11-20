@@ -5605,7 +5605,7 @@ async function runColorCommand(args) {
 var toolVersion, engineVersion, init_color2 = __esm({
   "cli/color.mjs"() {
     init_src();
-    toolVersion = "0.1.0", engineVersion = "0.7.1";
+    toolVersion = "0.2.0", engineVersion = "0.7.1";
   }
 });
 

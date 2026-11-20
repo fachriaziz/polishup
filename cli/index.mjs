@@ -4,9 +4,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { createInterface } from 'node:readline/promises';
-import { AGENTS, loadPayload, getManualTarget, getTarget, inspect, plan, apply } from './installations.mjs';
+import { AGENTS, loadPayload, getManualTarget, getTarget, plan, apply } from './installations.mjs';
 import { checkUpdate, forwardedTargetArgs, runNewVersion } from './update.mjs';
+import { BACK, createPrompts } from './prompts.mjs';
+import { selectSetup } from './menu.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const metadata = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
@@ -15,7 +16,7 @@ const HELP = `PolishUp ${metadata.version}
 
 Usage: ${helpCommand} [install|update|uninstall|color] [options]
 
-  install                  Guided setup (also used when no command is given)
+  install                  Guided setup (the default for a new installation)
   update                   Update an existing installation
   uninstall                Remove an installation
   color check|generate     Check color pairs or generate palette candidates
@@ -27,6 +28,8 @@ Choose the harness and location in the menu. Flags are optional:
   --destination <path>     Set a custom manual skill folder (must end in polishup)
   --dry-run                Show changes without writing files
   --replace                Back up and replace modified or unmanaged files
+  --plain                  Use numbered text menus without styling
+  --no-input               Disable prompts; supply explicit target options
   --help                   Show this help
   --version                Show the installer package version
 
@@ -71,175 +74,170 @@ async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     agent: { type: 'string' }, scope: { type: 'string' }, profile: { type: 'string' }, destination: { type: 'string' }, 'dry-run': { type: 'boolean' },
     replace: { type: 'boolean' }, help: { type: 'boolean', short: 'h' }, version: { type: 'boolean' },
+    plain: { type: 'boolean' }, 'no-input': { type: 'boolean' },
   } });
-  const action = positionals[0] || 'install';
+  let action = positionals[0] || 'install';
   if (positionals.length > 1 || !['install', 'update', 'uninstall'].includes(action)) throw new Error(`Unknown command: ${positionals.join(' ')}. Run polishup --help.`);
   if (values.help) { console.log(HELP); return; }
   if (values.version) { console.log(metadata.version); return; }
   let agents = parseAgents(values.agent);
   if (values.profile && agents.length === 0) agents = ['hermes'];
+  if (values.destination && agents.length === 0) agents = ['manual'];
   if (values.scope && !['project', 'user'].includes(values.scope)) throw new Error('Choose --scope project or user.');
-  if (values.profile && agents.some(agent => agent !== 'hermes' && agent !== 'manual')) throw new Error('--profile only applies to Hermes targets.');
+  if (values.profile && !agents.includes('hermes')) throw new Error('--profile only applies to Hermes targets.');
   if (values.profile && values.scope && values.scope !== 'user') throw new Error('--profile requires --scope user.');
   if (values.profile && !values.scope) values.scope = 'user';
   if (values.destination && agents.length && !agents.includes('manual')) throw new Error('--destination requires --agent manual.');
-  if (agents.includes('manual') && !values.destination && !process.stdin.isTTY) throw new Error('--agent manual requires --destination <path>.');
-
-  let reader;
-  const ask = async question => {
-    if (!process.stdin.isTTY) throw new Error('An interactive terminal is required, or supply --agent and --scope.');
-    reader ??= createInterface({ input: process.stdin, output: process.stdout });
-    const controller = new AbortController();
-    const cancel = () => controller.abort();
-    reader.once('SIGINT', cancel);
-    try { return (await reader.question(question, { signal: controller.signal })).trim(); }
-    catch (error) { if (error.name === 'AbortError' || error.code === 'ERR_USE_AFTER_CLOSE') throw new Error('Cancelled.'); throw error; }
-    finally { reader.removeListener('SIGINT', cancel); }
-  };
-  const choose = async (label, choices) => {
-    console.log(label);
-    choices.forEach((item, i) => console.log(`  ${i + 1}. ${item.label}`));
-    const answer = await ask('Choose a number: ');
-    const selected = choices[Number(answer) - 1];
-    if (!selected) throw new Error('No valid choice selected. Nothing was changed.');
-    return selected.value;
-  };
+  const ui = await createPrompts({ plain: values.plain, noInput: values['no-input'] });
 
   try {
-    let scope = values.scope;
-    if (action !== 'install' && agents.length === 0) {
-      const candidates = Object.keys(AGENTS).filter(agent => agent !== 'manual').flatMap(agent => ['project', 'user'].map(candidateScope => {
-        try { return getTarget({ agent, scope: candidateScope, profile: agent === 'hermes' && candidateScope === 'user' ? values.profile : undefined }); }
-        catch { return null; }
-      })).filter(target => target && (!values.profile || target.agent === 'hermes') && (!scope || target.scope === scope) && fs.existsSync(target.skillDir))
-        .filter(target => {
-          try { return inspect(target).hasTarget; }
-          // Explicit selection reports invalid receipts or ownership conflicts before any change.
-          catch { return false; }
-        });
-      if (candidates.length === 1) { agents = [candidates[0].agent]; scope ||= candidates[0].scope; }
-      else if (candidates.length > 1 && process.stdin.isTTY) {
-        const selected = await choose('Choose an existing installation:', candidates.map(target => ({
-          label: `${AGENTS[target.agent]} (${target.scope}): ${target.skillDir}`, value: target,
-        })));
-        agents = [selected.agent];
-        scope ||= selected.scope;
-      }
-    }
-    if (!agents.length || !scope) {
-      if (!process.stdin.isTTY) throw new Error('Supply --agent and --scope outside an interactive terminal.');
-      if (!agents.length) agents = [await choose('Choose a harness:', Object.entries(AGENTS).map(([value, label]) => ({ value, label })))];
-      scope ||= await choose('Where should PolishUp be available?', [
-        { value: 'project', label: `This project (${process.cwd()})` },
-        { value: 'user', label: `All my projects (${os.homedir()})` },
-      ]);
-    }
-    if (values.profile && !agents.includes('hermes')) throw new Error('--profile requires Hermes in the selected --agent list.');
-    if (values.destination && !agents.includes('manual')) throw new Error('--destination requires --agent manual.');
-    if (agents.includes('manual') && !values.destination) values.destination = await ask('Custom skill folder path (the final folder must be named polishup): ');
-    if (action === 'install' && !values.agent && process.stdin.isTTY) {
-      while (agents.length < Object.keys(AGENTS).length) {
-        const answer = await ask('Install for another harness too? [y/N] ');
-        if (!/^y(es)?$/i.test(answer)) break;
-        const remaining = Object.entries(AGENTS).filter(([agent]) => !agents.includes(agent));
-        agents.push(await choose('Choose another harness:', remaining.map(([value, label]) => ({ value, label }))));
-      }
-    }
-    const payload = loadPayload(packageRoot);
-    const entries = [];
-    for (const agent of agents) {
-      try { entries.push({ targets: [agent === 'manual'
-        ? getManualTarget({ destination: values.destination, scope })
-        : getTarget({ agent, scope, profile: agent === 'hermes' ? values.profile : undefined })] }); }
-      catch (error) { entries.push({ targets: [], label: `${AGENTS[agent]} (${scope})`, error }); }
-    }
-    for (const group of groupTargets(entries.flatMap(entry => entry.targets))) {
-      try {
-        const operation = plan(group[0], payload, action, { selectedConsumers: group.map(target => target.consumer) });
-        entries.push({ targets: group, operation });
-      } catch (error) { entries.push({ targets: group, error }); }
-    }
-    const prepared = entries.filter(entry => entry.operation || entry.error);
-    const valid = prepared.filter(entry => entry.operation);
-    const failedBeforeApply = prepared.filter(entry => entry.error);
-    console.log(`PolishUp ${metadata.version} | ${action} | ${scope}`);
-    for (const entry of failedBeforeApply) console.log(`${entry.label || entry.targets.map(target => AGENTS[target.agent]).join(' + ')}: failed to prepare: ${entry.error.message}`);
-    for (const entry of valid) {
-      const { operation, targets } = entry;
-      const names = targets.map(target => AGENTS[target.agent]).join(' + ');
-      const target = operation.target;
-      console.log(`${names} | ${operation.kind} | ${target.agent === 'hermes' && target.profile ? `profile ${target.profile} | ` : ''}${target.skillDir}`);
-      console.log(`  Installed: ${operation.current.receipt?.version || (operation.current.exists ? 'unmanaged' : 'not installed')} | Available: ${payload.version} (${payload.revision.slice(0, 12)})`);
-      if (operation.conflicts.length) console.log(`  Conflicts: ${operation.conflicts.join('; ')}`);
-      for (const noteTarget of targets.filter(item => item.discoveryNote)) console.log(`  ${AGENTS[noteTarget.agent]}: ${noteTarget.discoveryNote}`);
-      for (const consumer of operation.current.consumers) {
-        if (!targets.some(item => item.agent === consumer.agent && item.scope === consumer.scope && item.profile === consumer.profile)) {
-          console.log(`  Other registered consumer: ${AGENTS[consumer.agent]} (${consumer.scope}${consumer.profile ? `, ${consumer.profile}` : ''})`);
+    ui.intro(`PolishUp ${metadata.version}`);
+    const request = { action, explicitAction: positionals.length > 0, agents: [...agents], values: { ...values } };
+    let draft;
+    while (true) {
+      const selection = await selectSetup({ ...request, ui, resume: draft });
+      for (const issue of selection.issues || []) console.error(`Needs attention: ${issue.target.skillDir}: ${issue.error.message}`);
+      if (selection.action === 'exit') return;
+      if (selection.action === 'details') {
+        for (const { target, state } of selection.installations) {
+          const changed = state.changed.length + state.extra.length + Number(state.commandChanged ||
+            (target.commandFile && state.consumer?.commandHash && !state.commandHash));
+          console.log(`${AGENTS[target.agent]} | ${target.scope}${target.profile ? ` | profile ${target.profile}` : ''} | ${state.receipt.version}`);
+          console.log(`  ${target.skillDir}`);
+          console.log(`  ${changed ? 'Local changes found; replacement requires approval.' : 'Managed files match their installation record.'}`);
         }
-      }
-      for (const targetWithCommand of targets.filter(item => item.commandFile)) {
-        console.log(`  OpenCode command: ${targetWithCommand.commandFile}`);
-        const base = scope === 'project' ? process.cwd() : os.homedir();
-        for (const folder of ['.agents', '.claude']) {
-          const compatible = path.join(base, folder, 'skills', 'polishup');
-          if (fs.existsSync(compatible)) console.log(`  Also present: ${compatible}. The selected OpenCode location takes precedence.`);
-        }
-      }
-    }
-
-    if (action === 'update') {
-      const release = await checkUpdate(metadata);
-      if (release.kind === 'local') console.log('Local build: checking bundled files. Public registry updates are disabled until publication.');
-      if (release.kind === 'newer') {
-        console.log(`Installer ${release.version} is available.`);
-        if (values['dry-run']) { console.log('Dry run: the newer package was not downloaded or executed.'); return; }
-        const forwarded = forwardedTargetArgs({ agents, scope, profile: values.profile, destination: values.destination, replace: values.replace });
-        reader?.close();
-        reader = null;
-        await runNewVersion(release.version, forwarded);
+        console.log('Local file inspection only; harness activation and registry updates were not checked.');
+        const next = await ui.choose('Installation details', [{ value: 'exit', label: 'Exit' }], { back: true });
+        if (next === BACK) { draft = undefined; continue; }
+        if (selection.issues.length) process.exitCode = 1;
         return;
       }
-    }
-    if (values['dry-run']) {
-      for (const entry of valid) apply(entry.operation, { dryRun: true });
-      console.log('Dry run: no files were written.');
-      if (failedBeforeApply.length) process.exitCode = 1;
+      action = selection.action;
+      agents = selection.agents;
+      const scope = selection.scope;
+      values.profile = selection.profile;
+      values.destination = selection.destination;
+      if (values.profile && !agents.includes('hermes')) throw new Error('--profile requires Hermes in the selected --agent list.');
+      if (values.destination && !agents.includes('manual')) throw new Error('--destination requires --agent manual.');
+      const payload = loadPayload(packageRoot);
+      const entries = [];
+      for (const agent of agents) {
+        try { entries.push({ targets: [agent === 'manual'
+          ? getManualTarget({ destination: values.destination, scope })
+          : getTarget({ agent, scope, profile: agent === 'hermes' ? values.profile : undefined })] }); }
+        catch (error) { entries.push({ targets: [], label: `${AGENTS[agent]} (${scope})`, error }); }
+      }
+      for (const group of groupTargets(entries.flatMap(entry => entry.targets))) {
+        try {
+          const operation = plan(group[0], payload, action, { selectedConsumers: group.map(target => target.consumer) });
+          entries.push({ targets: group, operation });
+        } catch (error) { entries.push({ targets: group, error }); }
+      }
+      const prepared = entries.filter(entry => entry.operation || entry.error);
+      const valid = prepared.filter(entry => entry.operation);
+      const failedBeforeApply = prepared.filter(entry => entry.error);
+      console.log(`PolishUp ${metadata.version} | ${action} | ${scope}`);
+      for (const entry of failedBeforeApply) console.log(`${entry.label || entry.targets.map(target => AGENTS[target.agent]).join(' + ')}: failed to prepare: ${entry.error.message}`);
+      for (const entry of valid) {
+        const { operation, targets } = entry;
+        const names = targets.map(target => AGENTS[target.agent]).join(' + ');
+        const target = operation.target;
+        console.log(`${names} | ${operation.kind} | ${target.agent === 'hermes' && target.profile ? `profile ${target.profile} | ` : ''}${target.skillDir}`);
+        console.log(`  Installed: ${operation.current.receipt?.version || (operation.current.exists ? 'unmanaged' : 'not installed')} | Available: ${payload.version} (${payload.revision.slice(0, 12)})`);
+        if (operation.conflicts.length) console.log(`  Conflicts: ${operation.conflicts.join('; ')}`);
+        for (const noteTarget of targets.filter(item => item.discoveryNote)) console.log(`  ${AGENTS[noteTarget.agent]}: ${noteTarget.discoveryNote}`);
+        for (const consumer of operation.current.consumers) {
+          if (!targets.some(item => item.agent === consumer.agent && item.scope === consumer.scope && item.profile === consumer.profile)) {
+            console.log(`  Other registered consumer: ${AGENTS[consumer.agent]} (${consumer.scope}${consumer.profile ? `, ${consumer.profile}` : ''})`);
+          }
+        }
+        for (const targetWithCommand of targets.filter(item => item.commandFile)) {
+          console.log(`  OpenCode command: ${targetWithCommand.commandFile}`);
+          const base = scope === 'project' ? target.projectRoot : os.homedir();
+          for (const folder of ['.agents', '.claude']) {
+            const compatible = path.join(base, folder, 'skills', 'polishup');
+            if (fs.existsSync(compatible)) console.log(`  Also present: ${compatible}. The selected OpenCode location takes precedence.`);
+          }
+        }
+      }
+
+      if (action === 'update') {
+        const release = await checkUpdate(metadata);
+        if (release.kind === 'local') console.log('Local build: checking bundled files. Public registry updates are disabled until publication.');
+        if (release.kind === 'newer') {
+          console.log(`Installer ${release.version} is available.`);
+          if (values['dry-run']) { console.log('Dry run: the newer package was not downloaded or executed.'); return; }
+          const forwarded = forwardedTargetArgs({ agents, scope, profile: values.profile, destination: values.destination,
+            replace: values.replace, plain: values.plain, noInput: values['no-input'] });
+          ui.close();
+          await runNewVersion(release.version, forwarded);
+          return;
+        }
+      }
+      if (values['dry-run']) {
+        for (const entry of valid) apply(entry.operation, { dryRun: true });
+        console.log('Dry run: no files were written.');
+        if (failedBeforeApply.length) process.exitCode = 1;
+        return;
+      }
+      let replace = values.replace || false;
+      if (!replace && valid.some(entry => entry.operation.conflicts.length) && ui.interactive) {
+        const choice = await ui.choose('Local changes require a decision', [
+          { value: 'replace', label: 'Back up and replace/remove conflicting targets' },
+          { value: 'skip', label: 'Skip conflicting targets' },
+          { value: 'cancel', label: 'Cancel' },
+        ], { back: selection.canGoBack });
+        if (choice === BACK) { draft = selection; continue; }
+        if (choice === 'cancel') { console.log('Cancelled. No files changed.'); return; }
+        replace = choice === 'replace';
+      }
+      const pending = valid.filter(entry => entry.operation.kind !== 'none' && (!entry.operation.conflicts.length || replace));
+      if (ui.interactive && selection.canGoBack && (pending.length || failedBeforeApply.length)) {
+        const choice = await ui.choose('Review changes', [
+          ...(pending.length ? [{ value: 'apply', label: `${action === 'uninstall' ? 'Remove' : action === 'update' ? 'Update' : 'Install'} ${pending.length} target location(s)` }] : []),
+          { value: 'cancel', label: 'Cancel' },
+        ], { back: true });
+        if (choice === BACK) { draft = selection; continue; }
+        if (choice === 'cancel') {
+          console.log('Cancelled. No files changed.'); return;
+        }
+      }
+      let failed = failedBeforeApply.length > 0;
+      let changed = 0, unchanged = 0, skipped = 0, failedCount = failedBeforeApply.length;
+      for (const entry of valid) {
+        const { operation, targets } = entry;
+        const names = targets.map(target => AGENTS[target.agent]).join(' + ');
+        if (operation.kind === 'none') {
+          unchanged++;
+          console.log(`${names}: ${action === 'uninstall' ? 'not installed' : 'unchanged; already up to date'}.`);
+          continue;
+        }
+        if (operation.conflicts.length && !replace) {
+          console.log(`${names}: skipped because conflicts were not approved for replacement.`);
+          failed = true;
+          skipped++;
+          continue;
+        }
+        try {
+          const result = apply(operation, { replace });
+          changed++;
+          console.log(`${names}: ${action === 'uninstall' ? result.detached ? 'association removed; shared files retained' : 'removed' : operation.current.exists ? 'updated and verified' : 'installed and verified'}.`);
+          if (result.backup) console.log(`  Previous files retained at: ${result.backup}`);
+          if (action !== 'uninstall') for (const target of targets) console.log(`  In ${AGENTS[target.agent]}: ${target.invocation}`);
+        } catch (error) {
+          console.log(`${names}: failed: ${error.message}`);
+          failed = true;
+          failedCount++;
+        }
+      }
+      console.log(`Result: ${changed} changed, ${unchanged} unchanged, ${skipped} skipped, ${failedCount} failed.`);
+      if (changed && action !== 'uninstall') {
+        console.log('Refresh skills or start a new session if a harness does not show the change. File verification does not prove activation.');
+      }
+      if (failed) process.exitCode = 1;
       return;
     }
-    let replace = values.replace || false;
-    if (!replace && valid.some(entry => entry.operation.conflicts.length) && process.stdin.isTTY) {
-      replace = /^y(es)?$/i.test(await ask('Back up and replace/remove only the conflicting targets? [y/N] '));
-    }
-    if (process.stdin.isTTY && !(values.agent && values.scope)) {
-      if (!/^y(es)?$/i.test(await ask(`Apply the prepared changes to ${valid.length} target location(s)? [y/N] `))) {
-        console.log('Cancelled. No files changed.'); return;
-      }
-    }
-    let failed = failedBeforeApply.length > 0;
-    for (const entry of valid) {
-      const { operation, targets } = entry;
-      const names = targets.map(target => AGENTS[target.agent]).join(' + ');
-      if (operation.kind === 'none') { console.log(`${names}: already up to date or not installed.`); continue; }
-      if (operation.conflicts.length && !replace) {
-        console.log(`${names}: skipped because conflicts were not approved for replacement.`);
-        failed = true;
-        continue;
-      }
-      try {
-        const result = apply(operation, { replace });
-        console.log(`${names}: ${action === 'uninstall' ? result.detached ? 'association removed; shared files retained' : 'removed' : 'installed and verified'}.`);
-        if (result.backup) console.log(`  Previous files retained at: ${result.backup}`);
-        if (action !== 'uninstall') for (const target of targets) console.log(`  In ${AGENTS[target.agent]}: ${target.invocation}`);
-      } catch (error) {
-        console.log(`${names}: failed: ${error.message}`);
-        failed = true;
-      }
-    }
-    if (valid.some(entry => entry.operation.kind !== 'none' && entry.operation.conflicts.length === 0) && action !== 'uninstall') {
-      console.log('Refresh skills or start a new session if a harness does not show the change. File verification does not prove activation.');
-    }
-    if (failed) process.exitCode = 1;
-  } finally { reader?.close(); }
+  } finally { ui.close(); }
 }
 
 main().catch(error => {
@@ -253,4 +251,14 @@ main().catch(error => {
   }
   console.error(`PolishUp: ${error.message}`);
   process.exitCode = error.message === 'Cancelled.' ? 130 : 1;
+}).finally(async () => {
+  // Windows console reads can survive readline cleanup after revisiting prompts.
+  // Finish only after the command and its output are complete, including updater children.
+  if (process.platform === 'win32' && process.stdin.isTTY) {
+    await Promise.all([process.stdout, process.stderr].map(stream => new Promise(resolve => {
+      if (stream.destroyed || !stream.writable) resolve();
+      else stream.write('', resolve);
+    })));
+    process.exit(process.exitCode ?? 0);
+  }
 });

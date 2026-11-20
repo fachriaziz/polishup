@@ -1,6 +1,6 @@
 {
   "name": "polishup-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Research-informed guidance for better AI work across writing, design, code, and more.",
   "author": "fachriaziz",
   "homepage": "https://github.com/fachriaziz/polishup#readme",
@@ -37,6 +37,9 @@
     ".opencode/commands/polishup.md",
     "cli/index.mjs",
     "cli/hosts.mjs",
+    "cli/detection.mjs",
+    "cli/menu.mjs",
+    "cli/prompts.mjs",
     "cli/installations.mjs",
     "cli/update.mjs"
   ],
@@ -49,5 +52,9 @@
   "devDependencies": {
     "colorjs.io": "0.7.1",
     "esbuild": "0.28.2"
+  },
+  "dependencies": {
+    "@clack/core": "1.6.0",
+    "@clack/prompts": "1.9.0"
   }
 }

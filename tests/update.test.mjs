@@ -48,6 +48,8 @@ test('delegation uses Node and npm-cli with argument arrays, not a command shell
   assert.equal(result.executable, process.execPath);
   assert.deepEqual(result.args, ['/example/npm-cli.js', 'exec', '--yes', '--registry=https://registry.npmjs.org/', `--package=${packageName}@0.2.0`, '--', 'polishup', 'update', '--agent', 'codex', '--scope', 'project']);
   assert.throws(() => updateInvocation('x;bad', [], '/npm-cli.js'), /version/);
+  assert.deepEqual(forwardedTargetArgs({ agents: ['codex'], scope: 'project', plain: true, noInput: true }),
+    ['--agent', 'codex', '--scope', 'project', '--plain', '--no-input']);
   assert.deepEqual(forwardedTargetArgs({ agent: 'hermes', scope: 'user', profile: 'writer', replace: true }),
     ['--agent', 'hermes', '--scope', 'user', '--profile', 'writer', '--replace']);
   assert.deepEqual(forwardedTargetArgs({ agents: ['codex', 'hermes'], scope: 'project' }),

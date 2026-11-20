@@ -2,6 +2,23 @@
 
 Notable user-facing changes only. Release dates use UTC.
 
+## [0.2.0] - 2026-11-20
+
+### Changed
+
+- Guided installer now supports keyboard multi-selection, installation details, existing Hermes profiles, and a numbered text fallback. Existing commands and explicit target flags remain supported; the CLI uses `@clack/prompts`, while the skill and color helper remain self-contained.
+- Installer output distinguishes changed, unchanged, skipped, and failed targets. CI and `--no-input` disable prompts; `--plain`, accessibility settings, and unsupported terminal output use text menus.
+- Back navigation preserves choices through setup, installation details, conflict handling, and final review. Detected harnesses appear first with compact labels; shared or configuration folders alone do not identify installed applications.
+- Keyboard guidance now stays in the footer for selection and custom-path prompts. Back uses Esc instead of a selectable menu entry, with text alternatives for line-based input.
+- Focused menu items use bright text without a background highlight; checked items remain distinct when focus moves.
+- README now documents npx and global npm installation, CLI commands, agent shortcuts, and usage examples in a shorter product guide.
+
+### Fixed
+
+- Project scope displays the resolved Git root, and custom destinations are requested after all harnesses have been selected.
+- Invalid menu input can be retried; closed input and Ctrl+D cancel pending keyboard prompts. Damaged installation receipts remain visible without granting overwrite permission.
+- Prompt cleanup releases terminal input so returning with Back and then cancelling does not leave the installer running.
+
 ## [0.1.0] - 2026-11-19
 
 ### Added

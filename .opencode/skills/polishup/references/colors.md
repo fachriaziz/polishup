@@ -13,7 +13,7 @@ node "<absolute-skill-path>/scripts/color.mjs" check "#222222" "#ffffff" --json
 node "<absolute-skill-path>/scripts/color.mjs" generate --input "<palette.json>" --json
 ```
 
-Keep caller-relative input paths relative to the caller. Do not assume package-cache locations. `node "<package>/cli/index.mjs" color ...` is an optional wrapper over the same prepared implementation. The current private package is unpublished; do not fetch an unrelated registry package named PolishUp. Complete manual, native and installer copies carry the helper; reading instructions alone does not supply file access or a runtime.
+Keep caller-relative input paths relative to the caller. Do not assume package-cache locations. The optional `polishup-cli` package exposes the same helper through `polishup color ...` or `node "<package>/cli/index.mjs" color ...`. Complete manual, native and installer copies carry the helper; reading instructions alone does not supply file access or a runtime.
 
 ## Check a pair
 

@@ -9,7 +9,7 @@ import { loadPayload, getManualTarget, plan, apply } from '../cli/installations.
 import { nativeExports } from '../scripts/export-native.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const packageName = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).name;
+const { name: packageName, version: packageVersion } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 function temporary(t) {
   const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup helper ü ')));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
@@ -33,7 +33,7 @@ test('a manually copied skill runs its helper without a package or node_modules'
     assert.equal(response.status, status, response.stderr);
     const report = JSON.parse(response.stdout);
     assert.equal(report.status, result);
-    assert.equal(report.toolVersion, '0.1.0');
+    assert.equal(report.toolVersion, packageVersion);
     if (result !== 'error') assert.equal(report.engine.version, '0.7.1');
   }
   const preview = path.join(directory, 'preview ü.html');

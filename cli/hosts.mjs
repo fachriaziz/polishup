@@ -22,7 +22,7 @@ export function getStorageGroup(agent, scope) {
 const PROFILE_NAME = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const RESERVED_PROFILES = new Set(['hermes', 'default', 'test', 'tmp', 'root', 'sudo']);
 
-function projectRootFor(cwd) {
+export function projectRootFor(cwd) {
   let current = path.resolve(cwd);
   while (true) {
     if (fs.existsSync(path.join(current, '.git'))) return current;
@@ -86,6 +86,16 @@ function hermesTargetHome({ home, env, cwd, platform, profile }) {
   }
   if (env.HERMES_HOME?.trim()) return { home: configuredHome, profile: relativeName(configuredProfileRoot, configuredHome, 'profiles') || (path.resolve(configuredHome) === path.resolve(defaultHome) ? 'default' : 'custom') };
   return { home: defaultHome, profile: 'default' };
+}
+
+export function hermesProfiles({ home = os.homedir(), env = process.env, cwd = process.cwd(), platform = process.platform } = {}) {
+  const configured = hermesTargetHome({ home, env, cwd, platform }).home;
+  const root = path.basename(path.dirname(configured)) === 'profiles' ? path.dirname(path.dirname(configured)) : configured;
+  try {
+    return fs.readdirSync(path.join(root, 'profiles'), { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && PROFILE_NAME.test(entry.name) && !RESERVED_PROFILES.has(entry.name))
+      .map(entry => entry.name).sort();
+  } catch (error) { if (error.code === 'ENOENT') return []; throw error; }
 }
 
 export function getTarget({ agent, scope, cwd = process.cwd(), home = os.homedir(), env = process.env, profile, platform = process.platform }) {

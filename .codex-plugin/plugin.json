@@ -1,6 +1,6 @@
 {
   "name": "polishup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Research-informed creation, refinement, and review across fields, with specialized Writing, UI/UX, and Code guidance.",
   "skills": "./skills/"
 }
