@@ -419,7 +419,8 @@ test('CLI optional flags support noninteractive lifecycle and the complete licen
   assert.equal(run(flags, f).status, 0);
   const skill = path.join(f.cwd, '.agents/skills/polishup');
   const receipt = JSON.parse(fs.readFileSync(path.join(skill, '.polishup-install.json')));
-  assert.equal(Object.keys(receipt.files).length, 38);
+  assert.equal(Object.keys(receipt.files).length, 39);
+  assert.match(fs.readFileSync(path.join(skill, 'agents/openai.yaml'), 'utf8'), /display_name: "PolishUp"/);
   assert.equal(fs.readFileSync(path.join(skill, 'LICENSE.txt'), 'utf8'),
     fs.readFileSync(path.join(root, 'LICENSE'), 'utf8'));
   assert.equal(run(['update', ...flags], f).status, 0);

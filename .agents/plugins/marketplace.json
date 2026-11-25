@@ -1,7 +1,7 @@
 {
   "name": "polishup-local",
   "interface": {
-    "displayName": "PolishUp (Local)"
+    "displayName": "PolishUp"
   },
   "plugins": [
     {

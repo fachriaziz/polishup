@@ -13,6 +13,8 @@ function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'polishup-exports-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'skills/polishup/references'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'skills/polishup/agents'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'skills/polishup/agents/openai.yaml'), 'interface:\n  display_name: "PolishUp"\n');
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: packageName, version: '0.1.0' }));
   fs.writeFileSync(path.join(root, 'skills/polishup/SKILL.md'), '---\nname: polishup\ndescription: Test\n---\nRead references/topic.md.\n');
   fs.writeFileSync(path.join(root, 'skills/polishup/references/topic.md'), 'Original guidance.\n');
@@ -27,7 +29,7 @@ test('native exports match full source trees and repeated generation writes noth
   assert.equal(generated.changed, 7);
   assert.deepEqual(generated.exports.map(p => p.split('/')[0]).sort(), ['.agents', '.claude', '.cursor', '.gemini', '.github', '.omp', '.opencode']);
   for (const target of generated.exports) {
-    for (const file of ['SKILL.md', 'references/topic.md']) {
+    for (const file of ['SKILL.md', 'references/topic.md', 'agents/openai.yaml']) {
       assert.deepEqual(fs.readFileSync(path.join(root, target, file)), fs.readFileSync(path.join(root, 'skills/polishup', file)));
     }
     assert.equal(fs.existsSync(path.join(root, target, '.polishup-install.json')), false);

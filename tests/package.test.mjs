@@ -40,7 +40,12 @@ test('source plugin contains one portable skill and ready native resources', asy
   assert.ok(antigravity.suggestedPrompts.length > 0 && antigravity.suggestedPrompts.length <= 3);
   const { loadPayload } = await import('../cli/installations.mjs');
   const payload = loadPayload(root);
-  assert.equal(Object.keys(payload.files).length, 38);
+  assert.equal(Object.keys(payload.files).length, 39);
+  assert.match(payload.files['agents/openai.yaml'].toString('utf8'), /display_name: "PolishUp"/);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, '.codex-plugin/plugin.json'))).interface,
+    portable.extensions['com.openai'].interface);
+  const claudeMarketplace = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json')));
+  assert.equal(claudeMarketplace.plugins[0].source, './');
   assert.equal(payload.files['LICENSE.txt'].toString('utf8'), license);
   assert.deepEqual(metadata.dependencies, { '@clack/core': '1.6.0', '@clack/prompts': '1.9.0' }, 'Only the CLI prompt libraries are runtime dependencies; the skill and helper remain self-contained');
 });
@@ -68,6 +73,9 @@ test('npm packs the complete installer directly from source without development 
   const { loadPayload } = await import('../cli/installations.mjs');
   const core = Object.keys(loadPayload(root).files).map(file => 'skills/polishup/' + file);
   const expected = [...core, 'README.md', 'LICENSE', 'package.json', '.opencode/commands/polishup.md',
+    'plugin.json', '.codex-plugin/plugin.json', '.claude-plugin/plugin.json', '.antigravity-plugin/plugin.json',
+    '.agents/plugins/marketplace.json', '.claude-plugin/marketplace.json',
+    'cli/plugins.mjs',
     'cli/index.mjs', 'cli/hosts.mjs', 'cli/detection.mjs', 'cli/menu.mjs', 'cli/prompts.mjs', 'cli/installations.mjs', 'cli/update.mjs'];
   assert.deepEqual(packed.files.map(file => file.path).sort(), expected.sort());
   const included = new Set(packed.files.map(file => file.path));

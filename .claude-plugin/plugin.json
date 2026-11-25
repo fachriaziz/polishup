@@ -1,5 +1,10 @@
 {
   "name": "polishup",
+  "displayName": "PolishUp",
+  "author": { "name": "fachriaziz" },
+  "license": "MIT",
+  "homepage": "https://github.com/fachriaziz/polishup",
+  "repository": "https://github.com/fachriaziz/polishup",
   "version": "0.2.0",
   "description": "Research-informed creation, refinement, and review across fields, with specialized Writing, UI/UX, and Code guidance."
 }

@@ -45,6 +45,8 @@ The installer supports Codex, Claude Code, OpenCode, Cursor, Oh My Pi, Gemini CL
 
 Reload your agent's skills or start a new session after installation. Discovery and available commands depend on the agent.
 
+For a native plugin, use `npx polishup-cli install --plugin --agent codex` or replace `codex` with `claude`. The selected host CLI must be installed. Guided personal setup for these hosts also offers a plugin option.
+
 <details>
 <summary>Other installation methods</summary>
 
@@ -67,15 +69,19 @@ Reading the skill requires no Node.js or Python. The optional color helper requi
 
 ### Native plugins
 
-The source checkout also includes native plugin manifests. These are separate from the npm skill installer:
+The package includes native plugin manifests and catalogs. `--plugin` delegates installation, updates, and removal to the host's own plugin manager, using the GitHub repository as a persistent source:
 
 | Agent | Installation |
 | --- | --- |
-| Claude Code | Load the checkout with `claude --plugin-dir "<path-to-polishup>"` |
-| Codex | Add the checkout as a local plugin marketplace, then install `polishup@polishup-local` |
+| Codex / ChatGPT desktop | `polishup install --plugin --agent codex` |
+| Claude Code | `polishup install --plugin --agent claude` |
 | Antigravity | Install the checkout through its plugin manager |
 
-Use one installation method per agent and scope to avoid duplicate copies.
+Codex CLI plugin installation is personal. Claude Code also accepts `--scope project`. Native host policies and permissions remain in effect. Installing locally does not publish PolishUp to the public plugin directory or install it into web/mobile sessions.
+
+For source development, Codex accepts `codex plugin marketplace add "<path-to-polishup>"`, then `codex plugin add polishup@polishup-local`. Claude Code accepts `claude --plugin-dir "<path-to-polishup>"` for a local session.
+
+Use one installation method per agent and scope. Existing standalone copies are preserved; remove the old copy through its installer if you want to use only the plugin. Refresh plugins or restart the host afterward.
 
 </details>
 
@@ -120,6 +126,7 @@ Run these commands in your terminal. The examples use the globally installed CLI
 | --- | --- |
 | `polishup` | Open guided installation or manage existing installations |
 | `polishup install` | Start installation setup directly |
+| `polishup install --plugin --agent codex` | Install through Codex's native plugin manager |
 | `polishup update` | Check for a newer published release and update installed skills |
 | `polishup uninstall` | Remove an installer-managed skill installation |
 | `polishup color check <foreground> <background>` | Check a color pair's contrast ratio |
@@ -128,6 +135,8 @@ Run these commands in your terminal. The examples use the globally installed CLI
 | `polishup --version` | Show the CLI version |
 
 Run installation management commands from the target project. `update` applies the published release to selected skill installations; to also replace your globally installed CLI, rerun `npm install -g polishup-cli`.
+
+For native plugins, use `polishup update --plugin --agent codex` or `polishup uninstall --plugin --agent codex`, replacing `codex` with `claude` when appropriate. These use the host's registered Git marketplace and leave the marketplace available after removal. `--dry-run` previews the native commands without executing them.
 
 <details>
 <summary>Optional flags and color examples</summary>

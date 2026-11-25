@@ -1,0 +1,7 @@
+{
+  "name": "polishup-local",
+  "owner": { "name": "fachriaziz" },
+  "plugins": [
+    { "name": "polishup", "source": "./", "description": "Research-informed guidance for writing, design, code, and more." }
+  ]
+}

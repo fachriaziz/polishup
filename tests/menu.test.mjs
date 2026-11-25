@@ -223,12 +223,22 @@ test('Back from a custom path can change scope without losing the entered draft'
 
 test('final review Back can revise the target before any installation is written', t => {
   const context = fixture(t);
-  const result = runInteractive(['--plain'], '{codex}\n1\nb\nb\n{claude}\n1\n2\n', context);
+  const result = runInteractive(['--plain'], '{codex}\n1\nb\nb\n{claude}\n1\n1\n2\n', context);
   assert.equal(result.status, 0, result.error?.message || result.stderr || result.stdout);
   assert.match(result.stdout, /Back/);
   assert.match(result.stdout, /Claude Code \| install/);
   assert.equal(fs.existsSync(path.join(context.root, 'project', '.agents')), false);
   assert.equal(fs.existsSync(path.join(context.root, 'project', '.claude')), false);
+});
+
+test('guided personal setup can preview a native plugin without running the host', t => {
+  const context = fixture(t);
+  const result = runInteractive(['--plain', '--dry-run'], '{codex}\n2\n2\n', context);
+  assert.equal(result.status, 0, result.error?.message || result.stderr || result.stdout);
+  assert.match(result.stdout, /Installation type/);
+  assert.match(result.stdout, /codex plugin marketplace add fachriaziz\/polishup/);
+  assert.match(result.stdout, /no native commands were executed/);
+  assert.equal(fs.existsSync(path.join(context.home, '.codex')), false);
 });
 
 test('Back from a Hermes profile can switch to project scope without leaking the personal profile', async t => {

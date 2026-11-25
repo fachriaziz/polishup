@@ -2,5 +2,22 @@
   "name": "polishup",
   "version": "0.2.0",
   "description": "Research-informed creation, refinement, and review across fields, with specialized Writing, UI/UX, and Code guidance.",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "author": { "name": "fachriaziz" },
+  "license": "MIT",
+  "homepage": "https://github.com/fachriaziz/polishup",
+  "repository": "https://github.com/fachriaziz/polishup",
+  "interface": {
+    "displayName": "PolishUp",
+    "developerName": "fachriaziz",
+    "category": "Productivity",
+    "websiteURL": "https://github.com/fachriaziz/polishup",
+    "supportURL": "https://github.com/fachriaziz/polishup/issues",
+    "shortDescription": "Research-informed quality across fields",
+    "defaultPrompt": [
+      "Use PolishUp to review this draft without changing it.",
+      "Use PolishUp to refine this interface while preserving its visual identity.",
+      "Use PolishUp to plan a Blender product render using research relevant to my version and delivery requirements."
+    ]
+  }
 }

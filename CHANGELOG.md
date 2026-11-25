@@ -6,7 +6,13 @@ Notable user-facing changes only. Release dates use UTC.
 
 ### Added
 
+- Native Codex/ChatGPT desktop and Claude Code plugin installation through host CLI managers, including update/removal and preview commands.
+- OpenAI skill display metadata, included in manual, npm, installer, and generated native copies.
 - GitHub Actions publishing through npm Trusted Publishing, with release-tag checks, package tests, and a manual publishing option for existing tags.
+
+### Changed
+
+- npm packages now include the portable and native plugin manifests and catalogs. OpenAI presentation metadata is consistent across portable and compatibility manifests.
 
 ## [0.2.0] - 2026-11-20
 

@@ -53,6 +53,8 @@ export function loadPayload(packageRoot) {
   const license = path.join(skillRoot, 'LICENSE.txt');
   if (fs.existsSync(license)) files['LICENSE.txt'] = fs.readFileSync(assertSafePath(license));
   Object.assign(files, filesIn(path.join(skillRoot, 'references'), 'references/'));
+  const agents = path.join(skillRoot, 'agents');
+  if (fs.existsSync(agents)) Object.assign(files, filesIn(agents, 'agents/'));
   const scripts = path.join(skillRoot, 'scripts');
   if (fs.existsSync(scripts)) Object.assign(files, filesIn(scripts, 'scripts/'));
   const hashes = Object.fromEntries(Object.keys(files).sort().map(file => [file, hash(files[file])]));

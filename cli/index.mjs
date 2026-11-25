@@ -8,6 +8,7 @@ import { AGENTS, loadPayload, getManualTarget, getTarget, plan, apply } from './
 import { checkUpdate, forwardedTargetArgs, runNewVersion } from './update.mjs';
 import { BACK, createPrompts } from './prompts.mjs';
 import { selectSetup } from './menu.mjs';
+import { PLUGIN_HOSTS, pluginCommands, pluginInvocation, runPlugin } from './plugins.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const metadata = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
@@ -24,6 +25,7 @@ Usage: ${helpCommand} [install|update|uninstall|color] [options]
 Choose the harness and location in the menu. Flags are optional:
   --agent <id[,id...]>      Select one or more harnesses (for example codex,claude)
   --scope project|user     Select the installation scope
+  --plugin                 Use the native Codex or Claude Code plugin manager
   --profile <name>         Select an existing Hermes user profile
   --destination <path>     Set a custom manual skill folder (must end in polishup)
   --dry-run                Show changes without writing files
@@ -37,6 +39,7 @@ Examples:
   ${helpCommand}
   ${helpCommand} update
   ${helpCommand} uninstall
+  ${helpCommand} install --plugin --agent codex
   ${helpCommand} install --agent codex,claude --scope project
   ${helpCommand} install --agent manual --destination ./custom/skills/polishup --scope project
 
@@ -74,7 +77,7 @@ async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     agent: { type: 'string' }, scope: { type: 'string' }, profile: { type: 'string' }, destination: { type: 'string' }, 'dry-run': { type: 'boolean' },
     replace: { type: 'boolean' }, help: { type: 'boolean', short: 'h' }, version: { type: 'boolean' },
-    plain: { type: 'boolean' }, 'no-input': { type: 'boolean' },
+    plain: { type: 'boolean' }, 'no-input': { type: 'boolean' }, plugin: { type: 'boolean' },
   } });
   let action = positionals[0] || 'install';
   if (positionals.length > 1 || !['install', 'update', 'uninstall'].includes(action)) throw new Error(`Unknown command: ${positionals.join(' ')}. Run polishup --help.`);
@@ -92,6 +95,32 @@ async function main() {
 
   try {
     ui.intro(`PolishUp ${metadata.version}`);
+    const nativePlugins = async (selected, scope) => {
+      if (values.profile || values.destination || values.replace) throw new Error('--profile, --destination, and --replace do not apply to native plugins. The host manages plugin locations and conflicts.');
+      const operations = selected.map(agent => ({ agent, commands: pluginCommands(agent, action, scope) }));
+      console.log(`PolishUp ${metadata.version} | native plugin | ${action} | ${scope}`);
+      for (const { agent, commands } of operations) for (const args of commands) console.log(`  ${agent} ${args.join(' ')}`);
+      if (values['dry-run']) { console.log('Dry run: no native commands were executed.'); return; }
+      const invocations = operations.map(({ agent }) => pluginInvocation(agent));
+      ui.close();
+      for (const [index, { agent }] of operations.entries()) {
+        await runPlugin({ agent, action, scope }, { invocation: invocations[index], env: values.plain ? { ...process.env, NO_COLOR: '1' } : process.env });
+        console.log(`${PLUGIN_HOSTS[agent]}: native plugin ${action} completed.`);
+        if (action !== 'uninstall') {
+          const standalone = getTarget({ agent, scope }).skillDir;
+          if (fs.existsSync(standalone)) console.log(`  Standalone skill also present: ${standalone}. To use only the plugin, remove that copy with ${helpCommand} uninstall --agent ${agent} --scope ${scope}.`);
+        }
+      }
+      console.log('Refresh plugins or start a new session in the host. Other plugins and standalone skill copies were not removed.');
+    };
+    if (values.plugin) {
+      if (!agents.length) {
+        if (!ui.interactive) throw new Error('Supply --agent codex or --agent claude for native plugin installation outside an interactive terminal.');
+        agents = [await ui.choose('Choose a plugin host', Object.entries(PLUGIN_HOSTS).map(([value, label]) => ({ value, label })))];
+      }
+      await nativePlugins(agents, values.scope || 'user');
+      return;
+    }
     const request = { action, explicitAction: positionals.length > 0, agents: [...agents], values: { ...values } };
     let draft;
     while (true) {
@@ -117,6 +146,15 @@ async function main() {
       const scope = selection.scope;
       values.profile = selection.profile;
       values.destination = selection.destination;
+      if (ui.interactive && selection.canGoBack && action === 'install' && agents.every(agent => Object.hasOwn(PLUGIN_HOSTS, agent)) &&
+          (scope === 'user' || !agents.includes('codex'))) {
+        const format = await ui.choose('Installation type', [
+          { value: 'skill', label: 'Standalone skill' },
+          { value: 'plugin', label: 'Native plugin', hint: 'Managed by the selected host; Codex plugins also support ChatGPT desktop' },
+        ], { back: true });
+        if (format === BACK) { draft = selection; continue; }
+        if (format === 'plugin') { await nativePlugins(agents, scope); return; }
+      }
       if (values.profile && !agents.includes('hermes')) throw new Error('--profile requires Hermes in the selected --agent list.');
       if (values.destination && !agents.includes('manual')) throw new Error('--destination requires --agent manual.');
       const payload = loadPayload(packageRoot);
