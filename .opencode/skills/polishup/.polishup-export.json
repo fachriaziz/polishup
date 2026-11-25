@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "generatedBy": "polishup-native-export",
-  "revision": "7290bb07c829cbd6d7f654b6ecb360a2889c512db8302d38df5fc9f17457a2f2",
+  "revision": "c8df1149a49764e35e51d425badcd445a1c95fd901af252f9f850afe35f42b82",
   "files": {
     "LICENSE.txt": "5e05d64213ea78ab26f0ebd7a09810c00bcbd67136f48a7cd93cfe6235c40f90",
     "SKILL.md": "e90a4931ebcdbfe5c6866ddf685ab921823d3bd1190fdae0ab0ad79805d9b2eb",
@@ -41,6 +41,6 @@
     "references/writing/rules.md": "d0abb9dd9152a587f439dbc187f35fccb89705c608cca075f52f61a924d4cd13",
     "references/writing/voice-and-tone.md": "cc30fb28607cafe8a2877a75292e136dcc9697e4e8644e2024aee74c8435af79",
     "scripts/NOTICE.txt": "487c85563853230680bcb55508c06e0df7f292c7eba0f1045e13a3246d06d84f",
-    "scripts/color.mjs": "6e2b019ccf229eccd421c62ec47cce39faa62ef4fdb8e41c98bc5ada62043778"
+    "scripts/color.mjs": "d2bad0bcfae21184d6dbf06d3f1167853166516c4c04946b8ebaad9f343f4a0e"
   }
 }

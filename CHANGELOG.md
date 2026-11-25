@@ -2,7 +2,7 @@
 
 Notable user-facing changes only. Release dates use UTC.
 
-## [Unreleased]
+## [0.3.0] - 2026-11-26
 
 ### Added
 
@@ -13,6 +13,7 @@ Notable user-facing changes only. Release dates use UTC.
 ### Changed
 
 - npm packages now include the portable and native plugin manifests and catalogs. OpenAI presentation metadata is consistent across portable and compatibility manifests.
+- Product descriptions now lead with writing, design, and code, name the four work modes, and keep the OpenAI short description within its 30-character limit. README presents work modes before installation.
 
 ## [0.2.0] - 2026-11-20
 
