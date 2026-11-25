@@ -1,4 +1,4 @@
 interface:
   display_name: "PolishUp"
-  short_description: "Better writing, design, and code"
+  short_description: "Better writing, design, code"
   default_prompt: "Use $polishup for this task, preserving the requested scope and existing conventions."

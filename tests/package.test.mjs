@@ -35,6 +35,11 @@ test('source plugin contains one portable skill and ready native resources', asy
   const portable = JSON.parse(fs.readFileSync(path.join(root, 'plugin.json')));
   assert.equal(portable.$schema, 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
   assert.equal(portable.extensions['com.openai'].interface.displayName, 'PolishUp');
+  const shortDescription = portable.extensions['com.openai'].interface.shortDescription;
+  assert.ok([...shortDescription].length <= 30, 'Plugin short description must fit the 30-character UI target');
+  const skillUi = fs.readFileSync(path.join(skillRoot, 'agents/openai.yaml'), 'utf8');
+  const skillShort = skillUi.match(/^\s*short_description:\s*"([^"]+)"/m)?.[1];
+  assert.equal(skillShort, shortDescription, 'Skill and plugin short descriptions must match');
   const antigravity = JSON.parse(fs.readFileSync(path.join(root, '.antigravity-plugin/plugin.json')));
   assert.equal(antigravity.$schema, 'https://antigravity.google/schemas/v1/plugin.json');
   assert.ok(antigravity.suggestedPrompts.length > 0 && antigravity.suggestedPrompts.length <= 3);

@@ -1,6 +1,6 @@
 # PolishUp
 
-An AI agent skill that helps create, improve, and review writing, designs, code, and more.
+An AI agent skill for creating, refining, and reviewing writing, designs, code, and more.
 
 PolishUp helps reduce common **AI slop**, including generic writing, repetitive designs, unsupported claims, and unnecessarily complex code. It uses relevant guidance and research while respecting your goals and existing project conventions.
 
@@ -15,6 +15,17 @@ PolishUp helps reduce common **AI slop**, including generic writing, repetitive 
 For other fields, PolishUp uses task-specific research and checks. Guidance loads on demand, using your agent's available tools without requiring a particular model, framework, MCP server, or hook.
 
 An optional [color helper](skills/polishup/references/colors.md) supports contrast checks and palette exploration.
+
+## What you can do
+
+Ask for an action in your agent's chat. These labels are optional.
+
+| Action | What it does | Example request |
+| --- | --- | --- |
+| Review | Reports findings without editing | "Use PolishUp to review this draft without changing it." |
+| Refine | Improves requested parts while preserving the rest | "Use PolishUp to refine this dashboard. Preserve its visual identity." |
+| Create | Produces new work from your brief | "Use PolishUp to write a product announcement from these facts." |
+| Redesign | Reworks the parts you specify | "Use PolishUp to redesign the settings page, keeping its existing flows." |
 
 ## Installation
 
@@ -84,22 +95,6 @@ Use one installation method per agent and scope. Existing standalone copies are 
 </details>
 
 ## Using the skill
-
-In your agent's chat, name PolishUp and describe the task:
-
-```text
-Use PolishUp to write a product announcement from these facts.
-```
-
-```text
-Use PolishUp to refine this dashboard. Preserve its visual identity and workflows.
-```
-
-```text
-Use PolishUp to review this function for unnecessary complexity. Report findings without editing it.
-```
-
-Ask it to create new work, refine existing work, review without editing, or redesign specified parts. Refinement preserves existing meaning, identity, and behavior outside the requested changes.
 
 These requests go in your agent's chat, not your terminal. You can also use its supported skill shortcuts:
 

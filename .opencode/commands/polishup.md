@@ -1,5 +1,5 @@
 ---
-description: Create, improve, or review work with PolishUp
+description: Create, refine, review, or redesign work with PolishUp
 ---
 Use the skill with ID `polishup` and follow its instructions for this request:
 

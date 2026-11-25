@@ -1,7 +1,7 @@
 {
   "name": "polishup",
   "version": "0.2.0",
-  "description": "An AI agent skill that helps create, improve, and review writing, designs, code, and more while reducing generic AI output.",
+  "description": "An AI agent skill for writing, design, code, and more. It combines task-specific research and practical guidance to create, refine, and review work while reducing generic AI output.",
   "skills": "./skills/",
   "author": {
     "name": "fachriaziz"
@@ -15,7 +15,7 @@
     "category": "Productivity",
     "websiteURL": "https://github.com/fachriaziz/polishup",
     "supportURL": "https://github.com/fachriaziz/polishup/issues",
-    "shortDescription": "Better writing, design, and code",
+    "shortDescription": "Better writing, design, code",
     "defaultPrompt": [
       "Use PolishUp to review this draft without changing it.",
       "Use PolishUp to refine this interface while preserving its visual identity.",

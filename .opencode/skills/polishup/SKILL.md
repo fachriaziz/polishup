@@ -1,7 +1,7 @@
 ---
 name: polishup
 license: MIT
-description: Help create, improve, and review work with guidance suited to the task. Use when writing, editing, designing, implementing, debugging, or reviewing work, including tasks outside the bundled Writing, UI/UX, and Code guidance. Not for casual conversation, standalone factual questions, simple calculations, or single-word translations.
+description: Create, refine, review, or redesign work using task-specific research and practical guidance. Use when writing, editing, designing, implementing, debugging, or reviewing work, including tasks outside the bundled Writing, UI/UX, and Code guidance. Not for casual conversation, standalone factual questions, simple calculations, or single-word translations.
 metadata:
   version: "0.1"
 ---
