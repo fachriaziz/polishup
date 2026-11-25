@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "generatedBy": "polishup-native-export",
-  "revision": "b160bf3e23ac8a428d7089e1934683c16c5ee760f7b20e86cda95f21187ee850",
+  "revision": "cc12d54a0cafa59f90ad662a66849f6652f55b268f7b780fcfef3985c0bf2522",
   "files": {
     "LICENSE.txt": "5e05d64213ea78ab26f0ebd7a09810c00bcbd67136f48a7cd93cfe6235c40f90",
-    "SKILL.md": "be42c1889ec79207a8ab605f4d8d7db6f658f396376941b8bdc2a7d675d02433",
-    "agents/openai.yaml": "e95f5df775448d08a86625c0f247a5b8fb3706a7875a7dea3c38dd30c7ea4afc",
+    "SKILL.md": "72ee1406352b112a0c518b6a2ebc967d27b8491282d30017501805b74c8358e6",
+    "agents/openai.yaml": "6f5bc7b61b68f0609b4484b80acbd949b59d8d6a83c15441a215f89eb1cbaded",
     "references/code/implementation.md": "26718f13f8caa3df5e6ff85c30e649b41887c4a0215141a8d8ffc080b7284e18",
     "references/code/index.md": "e5fa5aad70c9e0e502f2d93423846364a14eed0d50517250bc12aae8910cfd02",
     "references/code/rules.md": "064269590bc5e5f5e231a7de47cf8b4f3832cdbe634494a35bce6a6c52b8115d",

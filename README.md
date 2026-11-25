@@ -1,10 +1,8 @@
 # PolishUp
 
-An agent skill for writing, design, code, and more.
+An AI agent skill that helps create, improve, and review writing, designs, code, and more.
 
-PolishUp is an agent skill for creating, refining, and reviewing work. It helps address **AI slop**: generic writing, repetitive interface designs, unsupported claims, and unnecessarily complicated code.
-
-It uses relevant research and professional guidance while respecting your goals and existing project conventions.
+PolishUp helps reduce common **AI slop**, including generic writing, repetitive designs, unsupported claims, and unnecessarily complex code. It uses relevant guidance and research while respecting your goals and existing project conventions.
 
 ## What it covers
 

@@ -1,7 +1,7 @@
 {
   "name": "polishup-cli",
   "version": "0.2.0",
-  "description": "Research-informed guidance for better AI work across writing, design, code, and more.",
+  "description": "An AI agent skill that helps create, improve, and review writing, designs, code, and more while reducing generic AI output.",
   "author": "fachriaziz",
   "homepage": "https://github.com/fachriaziz/polishup#readme",
   "repository": {
